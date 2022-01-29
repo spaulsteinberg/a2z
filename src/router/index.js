@@ -9,13 +9,13 @@ const routes = [
         component: MainView
     },
     {
-        path: '/main',
-        name: 'Main',
+        path: '/explore',
+        name: 'Explore',
         component: MainView
     },
     {
         path: '/profile/account',
-        name: 'Account',
+        name: 'Accounts',
         component: AccountView
     },
     {
