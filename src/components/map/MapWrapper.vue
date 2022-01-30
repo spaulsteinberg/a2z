@@ -1,6 +1,6 @@
 <template>
-  <div id="map" v-if="success"></div>
-  <div id="fallback-container" v-else-if="error || loading">
+  <div id="map" v-show="!error"></div>
+  <div id="fallback-container" v-if="error || loading">
     <MapFeedback :loading="loading" :error="error"/>
   </div>
 </template>
@@ -31,7 +31,7 @@ export default {
         };
         onMounted(() => {
             state.loading = true
-            /* state.error = false
+            state.error = false
             state.success = false
             console.log("past setting")
             loader
@@ -49,7 +49,7 @@ export default {
             .finally(() => {
               console.log("in finally")
               state.loading = false
-            }) */
+            })
         })
         return {
             ...toRefs(state)
