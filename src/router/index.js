@@ -15,7 +15,7 @@ const routes = [
     },
     {
         path: '/profile/account',
-        name: 'Accounts',
+        name: 'Account',
         component: AccountView
     },
     {

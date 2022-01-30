@@ -1,7 +1,7 @@
 <template>
-  <div id="map"></div>
-  <div id="fallback-container">
-    <MapFeedback :loading="loading" :error="error" v-if="error || loading"/>
+  <div id="map" v-if="success"></div>
+  <div id="fallback-container" v-else-if="error || loading">
+    <MapFeedback :loading="loading" :error="error"/>
   </div>
 </template>
 
@@ -31,7 +31,7 @@ export default {
         };
         onMounted(() => {
             state.loading = true
-            state.error = false
+            /* state.error = false
             state.success = false
             console.log("past setting")
             loader
@@ -40,7 +40,7 @@ export default {
               console.log("in then")
               state.success = true
               new google.maps.Map(document.getElementById("map"), mapOptions);
-            //  context.emit('wrapperMounted');
+              context.emit('wrapperMounted');
             })
             .catch(err => {
               console.log(err)
@@ -49,7 +49,7 @@ export default {
             .finally(() => {
               console.log("in finally")
               state.loading = false
-            })
+            }) */
         })
         return {
             ...toRefs(state)

@@ -1,28 +1,33 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-light bg-secondary">
-  <div class="container-fluid">
-    <router-link to="/" custom class="navbar-brand">
-      a2z
-    </router-link>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#">Explore</a>
-        </li>
-      </ul>
+  <nav class="navbar navbar-expand-lg navbar-light" id="main-nav">
+    <div class="container-fluid">
+      <router-link to="/" class="navbar-brand styled-brand">{{appName}}</router-link>
+      <NavbarToggler />
+      <NavbarCollapse :links="links" />
     </div>
-  </div>
-</nav>
+  </nav>
 </template>
 
 <script>
-export default {
-  name: "Navbar",
-};
+  import { ref } from 'vue'
+  import NavbarCollapse from './NavbarCollapse.vue';
+import NavbarToggler from './NavbarToggler.vue';
+  export default {
+    name: "Navbar",
+    components: { NavbarCollapse, NavbarToggler },
+    setup() {
+      const appName = ref('a2z')
+      const links = ref([{ to: '/explore', text: 'Explore'}, { to: '/profile/account', text: 'Accounts'}])
+      return {
+        appName,
+        links
+      }
+    }
+  };
 </script>
 
 <style scoped>
+  #main-nav {
+    background-color: #6610f2 !important;
+  }
 </style>
