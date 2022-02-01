@@ -18,7 +18,6 @@
         error: Boolean
     },
     setup(props) {
-        console.log(props.loading, props.error)
         const loadingText = ref("Loading Maps..."),
               errorText = ref("An error occurred loading the map. You can still search in the sidebar.")
         return {

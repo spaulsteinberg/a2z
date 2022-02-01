@@ -1,25 +1,54 @@
 <template>
   <div class="source-dest-container">
-    <InputGroup v-model.trim="source" id="source-loc" labelText="Start: " hasMargin/>
-    <InputGroup v-model.trim="destination" id="destination-loc" labelText="Destination: " hasMargin/>
-    <button class="btn btn-primary mt-2" @click="handleSubmit(source, destination)">Go!</button>
+    <InputGroup v-model.trim="source" id="source-loc" placeholder="Enter your starting point" labelText="Start: " hasMargin/>
+    <InputGroup v-model.trim="destination" id="destination-loc" placeholder="Choose your destination" labelText="Destination: " hasMargin/>
+    <button class="btn btn-primary mt-2" @click="handleGeocodingSubmit()">Go!</button>
   </div>
 </template>
 
 <script>
-    import { ref } from 'vue'
+    import { ref, onMounted, reactive } from 'vue'
     import InputGroup from '../utility/InputGroup.vue';
     export default {
         name: 'SideDrawerContainer',
         components: {
           InputGroup
         },
-        setup(){
+        setup(props){
           const source = ref('');
           const destination = ref('')
+
+          const inputState = reactive({
+            autocompleteSource: null,
+            autocompleteDestination: null,
+          })
+
+          onMounted(() => {
+            inputState.autocompleteSource = new window.google.maps.places.Autocomplete(
+              document.getElementById("source-loc")
+            )
+
+            inputState.autocompleteDestination = new window.google.maps.places.Autocomplete(
+              document.getElementById("destination-loc")
+            )
+
+            inputState.autocompleteSource.setComponentRestrictions({
+              country: ["us"]
+            })
+
+            inputState.autocompleteDestination.setComponentRestrictions({
+              country: ["us"]
+            })
+          })
+          
+          function handleGeocodingSubmit(){
+            props.handleSubmit(inputState.autocompleteSource.getPlace(), inputState.autocompleteDestination.getPlace())
+          }
+
           return {
             source,
-            destination
+            destination,
+            handleGeocodingSubmit
           }
         },
         props: {

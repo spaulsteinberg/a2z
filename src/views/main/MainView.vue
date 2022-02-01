@@ -1,7 +1,7 @@
 <template>
     <div class="main-container">
       <div class="sidebar-wrapper p-3">
-        <SideDrawerContainer :handleSubmit="submitCoordinates" />
+        <SideDrawerContainer :handleSubmit="submitCoordinates" v-if="mapIsMounted"/>
       </div>
       <MapWrapper @wrapperMounted="wrapperDidMount" />
     </div>
@@ -30,6 +30,7 @@ export default {
       }
 
       return {
+        mapIsMounted,
         wrapperDidMount, 
         submitCoordinates
       }

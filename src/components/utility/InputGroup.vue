@@ -1,7 +1,7 @@
 <template>
     <div :class="[hasMargin && 'my-2', 'form-group']">
       <label :for="id">{{labelText}}</label>
-      <input :type="type" class="form-control" :id="id" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" />
+      <input :type="type" class="form-control" :id="id" :placeholder="placeholder" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" />
     </div>
 </template>
 
@@ -34,6 +34,11 @@
             type: {
                 type: String,
                 default: 'text',
+                required: false
+            },
+            placeholder: {
+                type: String,
+                default: '',
                 required: false
             }
         }

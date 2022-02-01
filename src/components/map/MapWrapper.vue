@@ -33,21 +33,19 @@ export default {
             state.loading = true
             state.error = false
             state.success = false
-            console.log("past setting")
+            // implement vuex to handle state
             loader
             .load()
             .then((google) => {
-              console.log("in then")
               state.success = true
               new google.maps.Map(document.getElementById("map"), mapOptions);
               context.emit('wrapperMounted');
             })
             .catch(err => {
-              console.log(err)
+              console.log('[ERROR]:', err)
               state.error = true
             })
             .finally(() => {
-              console.log("in finally")
               state.loading = false
             })
         })
