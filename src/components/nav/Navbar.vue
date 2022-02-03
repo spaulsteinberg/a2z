@@ -17,7 +17,9 @@ import NavbarToggler from './NavbarToggler.vue';
     components: { NavbarCollapse, NavbarToggler },
     setup() {
       const appName = ref('a2z')
-      const links = ref([{ to: '/explore', text: 'Explore'}, { to: '/profile/account', text: 'Accounts'}])
+      const links = ref([
+        { to: '/explore', text: 'Explore'},
+      ])
       return {
         appName,
         links
