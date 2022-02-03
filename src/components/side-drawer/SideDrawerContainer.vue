@@ -1,18 +1,18 @@
 <template>
   <div class="source-dest-container">
-    <InputGroup v-model.trim="source" id="source-loc" placeholder="Enter your starting point" labelText="Start: " hasMargin/>
-    <InputGroup v-model.trim="destination" id="destination-loc" placeholder="Choose your destination" labelText="Destination: " hasMargin/>
+    <AZInputGroup v-model.trim="source" id="source-loc" placeholder="Enter your starting point" labelText="Start: " hasMargin/>
+    <AZInputGroup v-model.trim="destination" id="destination-loc" placeholder="Choose your destination" labelText="Destination: " hasMargin/>
     <button class="btn btn-primary mt-2" @click="handleGeocodingSubmit()">Go!</button>
   </div>
 </template>
 
 <script>
     import { ref, onMounted, reactive } from 'vue'
-    import InputGroup from '../utility/InputGroup.vue';
+    import AZInputGroup from '../utility/AZInputGroup.vue';
     export default {
         name: 'SideDrawerContainer',
         components: {
-          InputGroup
+          AZInputGroup
         },
         setup(props){
           const source = ref('');

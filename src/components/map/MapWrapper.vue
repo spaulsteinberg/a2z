@@ -1,5 +1,5 @@
 <template>
-  <div id="map" v-show="!error"></div>
+  <div id="map" v-show="!error && !loading"></div>
   <div id="fallback-container" v-if="error || loading">
     <MapFeedback :loading="loading" :error="error"/>
   </div>

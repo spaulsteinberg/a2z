@@ -1,18 +1,18 @@
 <template>
     <div class="feedback-wrapper" v-if="loading">
-        <FeedbackAlert :text="loadingText" centered includeSpinner />
+        <AZFeedbackAlert :text="loadingText" centered includeSpinner />
     </div>
     <div class="feedback-wrapper" v-else-if="error">
-        <FeedbackAlert :text="errorText" centered />
+        <AZFeedbackAlert :text="errorText" centered />
     </div>
 </template>
 
 <script>
     import { ref } from 'vue'
-    import FeedbackAlert from "../utility/FeedbackAlert.vue";
+    import AZFeedbackAlert from "../utility/AZFeedbackAlert.vue";
     export default {
     name: "MapFeedback",
-    components: { FeedbackAlert },
+    components: { AZFeedbackAlert },
     props: {
         loading: Boolean,
         error: Boolean

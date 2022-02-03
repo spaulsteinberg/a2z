@@ -8,7 +8,7 @@
 
 <script>
     export default {
-        name: 'TextCenteredBoundary',
+        name: 'AZCenteredBoundary',
         setup(){},
         props: {
             text: {

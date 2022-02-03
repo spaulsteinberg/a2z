@@ -8,14 +8,14 @@
 </template>
 
 <script>
-import { ref } from 'vue'
-import SideDrawerContainer from "../../components/side-drawer/SideDrawerContainer.vue"
-import MapWrapper from '../../components/map/MapWrapper.vue'
-export default {
-    name: 'MainView',
-    components: {
-      SideDrawerContainer,
-      MapWrapper
+    import { ref } from 'vue'
+    import SideDrawerContainer from "../../components/side-drawer/SideDrawerContainer.vue"
+    import MapWrapper from '../../components/map/MapWrapper.vue'
+    export default {
+        name: 'MainView',
+        components: {
+        SideDrawerContainer,
+        MapWrapper,
     },
     setup () {
 

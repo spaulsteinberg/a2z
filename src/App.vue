@@ -28,18 +28,4 @@
     height: calc(100% - 56px);
     padding: 0 1rem;
   }
-
-  /* global nav styles */
-  .styled-brand {
-    color: white !important;
-    opacity: .85 !important;
-  }
-
-  .router-link-active { opacity: 1 !important; }
-
-  .styled-brand:hover {
-    opacity: 1 !important;
-  }
-
-  /* end global nav styles */
 </style>

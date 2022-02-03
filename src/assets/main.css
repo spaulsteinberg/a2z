@@ -1,0 +1,24 @@
+
+/* global nav styles */
+.styled-brand {
+  color: white !important;
+  opacity: .85 !important;
+}
+
+.router-link-active { opacity: 1 !important; }
+
+.styled-brand:hover {
+  opacity: 1 !important;
+}
+/* end global nav styles */
+
+  .auth-page-button {
+    width: 100%;
+    margin: 1rem 0;
+}
+
+.spinner-container {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+}

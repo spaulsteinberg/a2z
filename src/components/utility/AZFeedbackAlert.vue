@@ -7,7 +7,7 @@
 
 <script>
     export default {
-        name: 'FeedbackAlert',
+        name: 'AZFeedbackAlert',
         props: {
             text: {
                 type: String,
