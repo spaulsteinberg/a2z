@@ -39,7 +39,7 @@
     import AZCenteredBoundary from '../../components/utility/AZCenteredBoundary.vue';
     import AZLoadingSpinner from '../../components/utility/AZLoadingSpinner.vue';
     import useAuthState from '../../composables/useAuthState';
-import AZErrorBlock from "../../components/utility/AZErrorBlock.vue";
+    import AZErrorBlock from "../../components/utility/AZErrorBlock.vue";
     export default {
         name: 'SignupView',
         components: {

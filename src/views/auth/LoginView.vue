@@ -19,7 +19,7 @@
                     <button class="btn auth-page-button text-white" type="button" id="signup">Sign Up</button>
                 </router-link>
                 <div class="text-center">
-                    <router-link to="/" >Forgot Password?</router-link>
+                    <router-link to="/reset/password" >Forgot Password?</router-link>
                 </div>
             </template>
         </template>
@@ -32,7 +32,7 @@
     import AZCenteredBoundary from '../../components/utility/AZCenteredBoundary.vue';
     import useAuthState from '../../composables/useAuthState';
     import AZLoadingSpinner from "../../components/utility/AZLoadingSpinner.vue";
-import AZErrorBlock from "../../components/utility/AZErrorBlock.vue";
+    import AZErrorBlock from "../../components/utility/AZErrorBlock.vue";
     export default {
     name: "LoginView",
     setup() {

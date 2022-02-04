@@ -3,6 +3,7 @@ import MainView from '../views/main/MainView.vue';
 import AccountView from '../views/profile/AccountView.vue';
 import LoginView from '../views/auth/LoginView.vue'
 import SignupView from '../views/auth/SignupView.vue'
+import ResetPasswordView from '../views/auth/ResetPasswordView.vue'
 import NotFound from '../views/NotFound.vue';
 import store from '../store/index'
 
@@ -37,6 +38,12 @@ const routes = [
         meta: { requiresAuth: false }
     },
     {
+        path: '/reset/password',
+        name: 'ResetPassword',
+        component: ResetPasswordView,
+        meta: { requiresAuth: false }
+    },
+    {
         path: '/:catchAll(.*)',
         name: 'NotFound',
         component: NotFound
@@ -60,7 +67,7 @@ router.beforeEach((to, from, next) => {
         next()
       }
     } else {
-      if ((to.name === 'Login' || to.name === 'Signup') && store.state.user){
+      if ((to.name === 'Login' || to.name === 'Signup' || to.name === 'ResetPassword') && store.state.user){
           next({path: '/explore'})
       } else {
           next()
