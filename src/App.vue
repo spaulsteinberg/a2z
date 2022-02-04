@@ -26,6 +26,5 @@
 
   .app-root-row {
     height: calc(100% - 56px);
-    padding: 0 1rem;
   }
 </style>

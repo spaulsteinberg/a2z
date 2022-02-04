@@ -76,7 +76,7 @@ import AZErrorBlock from "../../components/utility/AZErrorBlock.vue";
 
 <style scoped>
     .card {
-        width: 100%;
+        width: calc(100% - 2rem);
         max-width: 450px;
         margin: 2rem auto;
     }
