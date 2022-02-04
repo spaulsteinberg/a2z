@@ -3,26 +3,36 @@
     <div class="container-fluid">
       <router-link to="/" class="navbar-brand styled-brand">{{appName}}</router-link>
       <NavbarToggler />
-      <NavbarCollapse :links="links" />
+      <NavbarCollapse :links="userLinks" :user="user" v-if="user"/>
+      <NavbarCollapse :links="nonUserLinks" v-else/>
     </div>
   </nav>
 </template>
 
 <script>
-  import { ref } from 'vue'
+  import { ref, computed } from 'vue'
+  import { useStore } from 'vuex';
   import NavbarCollapse from './NavbarCollapse.vue';
-import NavbarToggler from './NavbarToggler.vue';
+  import NavbarToggler from './NavbarToggler.vue';
   export default {
     name: "Navbar",
     components: { NavbarCollapse, NavbarToggler },
     setup() {
       const appName = ref('a2z')
-      const links = ref([
+      const store = useStore()
+      const userLinks = ref([
         { to: '/explore', text: 'Explore'},
       ])
+      const nonUserLinks = ref([
+        { to: '/login', text: 'Login' },
+        { to: '/signup', text: 'Signup'}
+      ])
+
       return {
         appName,
-        links
+        user: computed(() => store.state.user),
+        userLinks,
+        nonUserLinks
       }
     }
   };
