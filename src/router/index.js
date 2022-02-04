@@ -4,31 +4,37 @@ import AccountView from '../views/profile/AccountView.vue';
 import LoginView from '../views/auth/LoginView.vue'
 import SignupView from '../views/auth/SignupView.vue'
 import NotFound from '../views/NotFound.vue';
+import store from '../store/index'
 
 const routes = [
     {
         path: '/',
-        component: MainView
+        component: MainView,
+        meta: { requiresAuth: true }
     },
     {
         path: '/explore',
         name: 'Explore',
-        component: MainView
+        component: MainView,
+        meta: { requiresAuth: true }
     },
     {
         path: '/profile/account',
         name: 'Account',
-        component: AccountView
+        component: AccountView,
+        meta: { requiresAuth: true }
     },
     {
         path: '/login',
         name: 'Login',
-        component: LoginView
+        component: LoginView,
+        meta: { requiresAuth: false }
     },
     {
         path: '/signup',
         name: 'Signup',
-        component: SignupView
+        component: SignupView,
+        meta: { requiresAuth: false }
     },
     {
         path: '/:catchAll(.*)',
@@ -41,5 +47,25 @@ const router = createRouter({
     routes,
     history: createWebHistory(process.env.BASE_URL)
 })
+
+router.beforeEach((to, from, next) => {
+    // if a route requires auth check if the user lacks credentials. If so redirect them
+    // if a route does not require auth and is the login or signup page with a valid user, redirect to explore
+    if (to.matched.some(record => record.meta.requiresAuth)) {
+      if (!store.state.user) {
+        next({
+            path: '/login', query: { redirect: to.fullPath }
+        })
+      } else { 
+        next()
+      }
+    } else {
+      if ((to.name === 'Login' || to.name === 'Signup') && store.state.user){
+          next({path: '/explore'})
+      } else {
+          next()
+      }
+    }
+  })
 
 export default router;

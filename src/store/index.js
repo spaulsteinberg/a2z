@@ -10,7 +10,6 @@ const store = createStore({
     mutations: {
         setUser(state, payload) {
             state.user = payload;
-            console.log("user state changed", state.user)
         },
         setAuthStateIsReady(state, payload) {
             state.authIsReady = payload
@@ -40,12 +39,6 @@ const store = createStore({
             context.commit('setUser', null)
         }
     }
-})
-
-const unsubscribe = onAuthStateChanged(auth, user => {
-    store.commit('setAuthStateIsReady', true);
-    store.commit('setUser', user)
-    unsubscribe()
 })
 
 export default store;
