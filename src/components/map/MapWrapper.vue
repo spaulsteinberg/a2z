@@ -6,17 +6,14 @@
 </template>
 
 <script>
-import { onMounted, reactive, toRefs } from "vue"
+import { computed, onMounted, toRefs } from "vue"
 import { Loader } from '@googlemaps/js-api-loader'
 import MapFeedback from "./MapFeedback.vue"
+import { useStore } from "vuex"
 export default {
     name: "MapWrapper",
-    setup(props, context) {
-        const state = reactive({
-          loading: false,
-          error: false,
-          success: false
-        })
+    setup() {
+        const store = useStore()
         const loader = new Loader({
             apiKey: process.env.VUE_APP_MAPS_KEY,
             version: "weekly",
@@ -30,30 +27,27 @@ export default {
             zoom: 10
         };
         onMounted(() => {
-            state.loading = true
-            state.error = false
-            state.success = false
-            // implement vuex to handle state
-            loader
-            .load()
-            .then((google) => {
-              state.success = true
-              new google.maps.Map(document.getElementById("map"), mapOptions);
-              context.emit('wrapperMounted');
-            })
-            .catch(err => {
-              console.log('[ERROR]:', err)
-              state.error = true
-            })
-            .finally(() => {
-              state.loading = false
-            })
+          store.commit('googleMaps/setMapLoading', true)
+          store.commit('googleMaps/setMapError', '')
+          loader
+          .load()
+          .then((google) => {
+            store.commit('googleMaps/setMap', new google.maps.Map(document.getElementById("map"), mapOptions))
+            store.commit('googleMaps/setMapMounted', true)
+          })
+          .catch(err => {
+            console.log('[ERROR]:', err)
+            store.commit('googleMaps/setMapError', 'Something went wrong loading maps.')
+          })
+          .finally(() => {
+            store.commit('googleMaps/setMapLoading', false)
+          })
         })
         return {
-            ...toRefs(state)
+          loading: computed(() => store.state.googleMaps.loading),
+          error: computed(() => store.state.googleMaps.error)
         };
     },
-    emits: ["wrapperMounted"],
     components: { MapFeedback }
 }
 </script>

@@ -1,11 +1,13 @@
 import { createStore, /* createLogger */ } from 'vuex';
 import authModule from './modules/authModule';
+import googleMapsModule from './modules/googleMapsModule';
 
 
 const store = createStore({
     plugins: [/* createLogger() */],
     modules: {
-        auth: authModule
+        auth: authModule,
+        googleMaps: googleMapsModule
     }
 })
 

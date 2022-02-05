@@ -1,37 +1,40 @@
 <template>
     <div class="main-container">
       <div class="sidebar-wrapper p-3">
-        <SideDrawerContainer :handleSubmit="submitCoordinates" v-if="mapIsMounted"/>
+        <SideDrawerContainer :handleSubmit="submitCoordinates" v-if="mapMounted"/>
+        <SideDrawerMapError v-else-if="mapError" />
+        <SideDrawerMapLoading v-else-if="mapLoading" />
       </div>
-      <MapWrapper @wrapperMounted="wrapperDidMount" />
+      <MapWrapper />
     </div>
 </template>
 
 <script>
-    import { ref } from 'vue'
     import SideDrawerContainer from "../../components/side-drawer/SideDrawerContainer.vue"
     import MapWrapper from '../../components/map/MapWrapper.vue'
+    import { useStore } from "vuex"
+    import { computed } from "vue"
+    import SideDrawerMapError from "../../components/side-drawer/SideDrawerMapError.vue"
+    import SideDrawerMapLoading from "../../components/side-drawer/SideDrawerMapLoading.vue"
     export default {
-        name: 'MainView',
-        components: {
-        SideDrawerContainer,
-        MapWrapper,
-    },
+      name: 'MainView',
+      components: {
+    SideDrawerContainer,
+    MapWrapper,
+    SideDrawerMapError,
+    SideDrawerMapLoading
+},
     setup () {
-
-      const mapIsMounted = ref(false)
-
-      function wrapperDidMount() { 
-        mapIsMounted.value = true
-      }
+      const { state } = useStore()
 
       function submitCoordinates(source, dest){
         console.log(source, dest)
       }
 
       return {
-        mapIsMounted,
-        wrapperDidMount, 
+        mapMounted: computed(() => state.googleMaps.mapMounted),
+        mapLoading: computed(() => state.googleMaps.loading),
+        mapError: computed(() => state.googleMaps.error),
         submitCoordinates
       }
     }
@@ -39,7 +42,6 @@
 </script>
 
 <style scoped>
-
   .main-container {
     display: flex;
     flex-direction: row;
@@ -51,5 +53,4 @@
     flex: 0 0 30%;
     border-right: 1px solid blue;
   }
-  
 </style>

@@ -3,7 +3,7 @@
         <AZFeedbackAlert :text="loadingText" centered includeSpinner />
     </div>
     <div class="feedback-wrapper" v-else-if="error">
-        <AZFeedbackAlert :text="errorText" centered />
+        <AZFeedbackAlert :text="error" severity="danger" centered />
     </div>
 </template>
 
@@ -15,14 +15,12 @@
     components: { AZFeedbackAlert },
     props: {
         loading: Boolean,
-        error: Boolean
+        error: String
     },
-    setup(props) {
-        const loadingText = ref("Loading Maps..."),
-              errorText = ref("An error occurred loading the map. You can still search in the sidebar.")
+    setup() {
+        const loadingText = ref("Loading Maps...")
         return {
-            loadingText,
-            errorText
+            loadingText
         }
     },
     
