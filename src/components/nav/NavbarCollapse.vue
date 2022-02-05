@@ -34,7 +34,7 @@
             const router = useRouter()
 
             const handleLogout = async () => {
-                await store.dispatch('logout')
+                await store.dispatch('auth/logout')
                 router.push('/login')
             }
 

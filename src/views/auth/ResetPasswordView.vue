@@ -42,7 +42,7 @@
                 error.value = null
                 success.value = false
                 try {
-                    await store.dispatch('resendPassword', {email: email.value})
+                    await store.dispatch('auth/resendPassword', {email: email.value})
                     success.value = true
                 } catch (err) {
                     error.value = "Could not send reset link."

@@ -10,8 +10,8 @@ import { auth } from './firebase/config'
 
 const unsubscribe = auth.onAuthStateChanged(user => {
     createApp(App).use(router).use(store).mount('#app')
-    store.commit('setAuthStateIsReady', true);
-    store.commit('setUser', user)
+    store.commit('auth/setAuthStateIsReady', true);
+    store.commit('auth/setUser', user)
     console.log("auth state change in onAuthStateChange")
     unsubscribe()
 })

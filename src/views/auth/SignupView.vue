@@ -57,7 +57,7 @@
                 try {
                     loading.value = true
                     error.value = null
-                    await store.dispatch('signup', { email: email.value, password: password.value})
+                    await store.dispatch('auth/signup', { email: email.value, password: password.value})
                     loading.value = false
                     router.push('/profile/account') // change this to main menu in future
                 } catch (err) {

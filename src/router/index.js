@@ -59,7 +59,7 @@ router.beforeEach((to, from, next) => {
     // if a route requires auth check if the user lacks credentials. If so redirect them
     // if a route does not require auth and is the login or signup page with a valid user, redirect to explore
     if (to.matched.some(record => record.meta.requiresAuth)) {
-      if (!store.state.user) {
+      if (!store.getters['auth/getUser']) {
         next({
             path: '/login', query: { redirect: to.fullPath }
         })
@@ -67,7 +67,7 @@ router.beforeEach((to, from, next) => {
         next()
       }
     } else {
-      if ((to.name === 'Login' || to.name === 'Signup' || to.name === 'ResetPassword') && store.state.user){
+      if ((to.name === 'Login' || to.name === 'Signup' || to.name === 'ResetPassword') && store.getters['auth/getUser']){
           next({path: '/explore'})
       } else {
           next()

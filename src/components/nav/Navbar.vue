@@ -30,7 +30,7 @@
 
       return {
         appName,
-        user: computed(() => store.state.user),
+        user: computed(() => store.state.auth.user),
         userLinks,
         nonUserLinks
       }

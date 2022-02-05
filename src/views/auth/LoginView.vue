@@ -42,7 +42,7 @@
             try {
                 loading.value = true;
                 error.value = null
-                await store.dispatch('login', { email: email.value, password: password.value})
+                await store.dispatch('auth/login', { email: email.value, password: password.value})
                 loading.value = false;
                 router.push('/profile/account') // change this
             } catch (err) {
