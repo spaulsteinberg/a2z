@@ -44,6 +44,27 @@
               country: ["us"]
             })
           })
+
+          const calculateAndDisplayRoute = (origin, destination) => {
+            /*
+                TODO - store these and do not create a new one each time
+                move store values into computed
+            */
+            const directionService = new store.state.googleMaps.google.maps.DirectionsService()
+            const directionRenderer = new store.state.googleMaps.google.maps.DirectionsRenderer({map: store.state.googleMaps.map})
+            console.log(directionService, directionRenderer)
+            directionService
+            .route({
+              origin: origin,
+              destination: destination,
+              travelMode: store.state.googleMaps.google.maps.TravelMode.DRIVING
+            })
+            .then(result => {
+              console.log(result)
+              directionRenderer.setDirections(result)
+            })
+            .catch(err => console.log("error", err))
+          }
           
           function handleGeocodingSubmit(){
             /*
@@ -64,16 +85,26 @@
               return
             }
 
-            const sourcePayload = {
+            const sourceLocation = {
               lng: sourcePlace.geometry.location.lng(),
               lat: sourcePlace.geometry.location.lat(),
+            }
+
+            const destLocation = {
+              lng: destPlace.geometry.location.lng(),
+              lat: destPlace.geometry.location.lat(),
+            }
+
+            const sourcePayload = {
+              ...sourceLocation,
               label: startLabel
             }
             const destPayload = {
-              lng: destPlace.geometry.location.lng(),
-              lat: destPlace.geometry.location.lat(),
+              ...destLocation,
               label: destLabel
             }
+            
+            calculateAndDisplayRoute(sourceLocation, destLocation)
 
             store.commit('googleMaps/setStartMarker', sourcePayload)
             store.commit('googleMaps/setDestinationMarker', destPayload)
