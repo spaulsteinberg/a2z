@@ -1,7 +1,7 @@
 <template>
     <div class="main-container">
       <div class="sidebar-wrapper p-3">
-        <SideDrawerContainer :handleSubmit="submitCoordinates" v-if="mapMounted"/>
+        <SideDrawerContainer v-if="mapMounted"/>
         <SideDrawerMapError v-else-if="mapError" />
         <SideDrawerMapLoading v-else-if="mapLoading" />
       </div>
@@ -19,23 +19,17 @@
     export default {
       name: 'MainView',
       components: {
-    SideDrawerContainer,
-    MapWrapper,
-    SideDrawerMapError,
-    SideDrawerMapLoading
-},
+        SideDrawerContainer,
+        MapWrapper,
+        SideDrawerMapError,
+        SideDrawerMapLoading
+    },
     setup () {
       const { state } = useStore()
-
-      function submitCoordinates(source, dest){
-        console.log(source, dest)
-      }
-
       return {
         mapMounted: computed(() => state.googleMaps.mapMounted),
         mapLoading: computed(() => state.googleMaps.loading),
         mapError: computed(() => state.googleMaps.error),
-        submitCoordinates
       }
     }
 }

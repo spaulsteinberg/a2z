@@ -8,15 +8,19 @@
 
 <script>
     import { ref, onMounted, reactive } from 'vue'
+    import { useStore } from 'vuex';
     import AZInputGroup from '../utility/AZInputGroup.vue';
     export default {
         name: 'SideDrawerContainer',
         components: {
           AZInputGroup
         },
-        setup(props){
+        setup(){
+          const store = useStore()
           const source = ref('');
           const destination = ref('')
+          const startLabel = "A",
+                destLabel = "Z"
 
           const inputState = reactive({
             autocompleteSource: null,
@@ -42,19 +46,43 @@
           })
           
           function handleGeocodingSubmit(){
-            props.handleSubmit(inputState.autocompleteSource.getPlace(), inputState.autocompleteDestination.getPlace())
+            /*
+              TODO - // make sure both addresses are valid
+            // if not, show error styles
+            // make button disabled until valid
+            */
+            const sourcePlace = inputState.autocompleteSource.getPlace();
+            const destPlace = inputState.autocompleteDestination.getPlace();
+
+            if (!sourcePlace || !sourcePlace.place_id) {
+              console.log("return and show error for source")
+              return
+            }
+
+            if (!destPlace || !destPlace.place_id){
+              console.log("return and show error for dest")
+              return
+            }
+
+            const sourcePayload = {
+              lng: sourcePlace.geometry.location.lng(),
+              lat: sourcePlace.geometry.location.lat(),
+              label: startLabel
+            }
+            const destPayload = {
+              lng: destPlace.geometry.location.lng(),
+              lat: destPlace.geometry.location.lat(),
+              label: destLabel
+            }
+
+            store.commit('googleMaps/setStartMarker', sourcePayload)
+            store.commit('googleMaps/setDestinationMarker', destPayload)
           }
 
           return {
             source,
             destination,
             handleGeocodingSubmit
-          }
-        },
-        props: {
-          handleSubmit: {
-            type: Function,
-            required: true
           }
         }
     }
