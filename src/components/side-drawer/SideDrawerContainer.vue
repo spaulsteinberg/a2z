@@ -45,13 +45,20 @@
             })
           })
 
+          const getLngLat = location => {
+            return {
+              lng: location.lng(),
+              lat: location.lat()
+            }
+          }
+
           const calculateAndDisplayRoute = (origin, destination) => {
             /*
                 TODO - store these and do not create a new one each time
                 move store values into computed
             */
             const directionService = new store.state.googleMaps.google.maps.DirectionsService()
-            const directionRenderer = new store.state.googleMaps.google.maps.DirectionsRenderer({map: store.state.googleMaps.map})
+            const directionRenderer = new store.state.googleMaps.google.maps.DirectionsRenderer({map: store.state.googleMaps.map, suppressMarkers: true})
             console.log(directionService, directionRenderer)
             directionService
             .route({
@@ -66,7 +73,7 @@
             .catch(err => console.log("error", err))
           }
           
-          function handleGeocodingSubmit(){
+          const handleGeocodingSubmit = () => {
             /*
               TODO - // make sure both addresses are valid
             // if not, show error styles
@@ -85,24 +92,11 @@
               return
             }
 
-            const sourceLocation = {
-              lng: sourcePlace.geometry.location.lng(),
-              lat: sourcePlace.geometry.location.lat(),
-            }
+            const sourceLocation = getLngLat(sourcePlace.geometry.location)
+            const destLocation = getLngLat(destPlace.geometry.location)
 
-            const destLocation = {
-              lng: destPlace.geometry.location.lng(),
-              lat: destPlace.geometry.location.lat(),
-            }
-
-            const sourcePayload = {
-              ...sourceLocation,
-              label: startLabel
-            }
-            const destPayload = {
-              ...destLocation,
-              label: destLabel
-            }
+            const sourcePayload = { ...sourceLocation, label: startLabel }
+            const destPayload = { ...destLocation, label: destLabel }
             
             calculateAndDisplayRoute(sourceLocation, destLocation)
 
