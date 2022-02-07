@@ -1,13 +1,13 @@
 <template>
-    <div>
-        Accounts!
-    </div>
+    <AccountCard />
 </template>
 
 <script>
+import AccountCard from "../../components/profile/AccountCard.vue";
     export default {
-        name: 'AccountView'
-    }
+    name: "AccountView",
+    components: { AccountCard }
+}
 </script>
 
 <style lang="sass" scoped>
