@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import HomeView from '../views/home/HomeView.vue'
 import MainView from '../views/main/MainView.vue';
 import AccountView from '../views/profile/AccountView.vue';
 import LoginView from '../views/auth/LoginView.vue'
@@ -10,8 +11,8 @@ import store from '../store/index'
 const routes = [
     {
         path: '/',
-        component: MainView,
-        meta: { requiresAuth: true }
+        name: 'Home',
+        component: HomeView,
     },
     {
         path: '/explore',
