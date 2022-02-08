@@ -1,4 +1,7 @@
 
+:root {
+  --pink-theme: #d63384;
+}
 /* global nav styles */
 .styled-brand {
   color: white !important;

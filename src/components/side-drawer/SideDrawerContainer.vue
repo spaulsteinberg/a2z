@@ -1,46 +1,48 @@
 <template>
   <div class="source-dest-container">
     <AZInputGroup v-model.trim="source" id="source-loc" placeholder="Enter your starting point" labelText="Start: " hasMargin/>
-    <AZInputGroup v-model.trim="destination" id="destination-loc" placeholder="Choose your destination" labelText="Destination: " hasMargin/>
-    <button class="btn btn-primary mt-2" @click="handleGeocodingSubmit()">Go!</button>
+    <button class="btn swap-btn" @click="handleSwapLocations">
+      <SwapIcon />
+    </button>
+    <AZInputGroup v-model.trim="destination" id="destination-loc" placeholder="Choose your destination" labelText="Destination: " :hasMargin="false"/>
+    <button class="btn btn-primary mt-2" @click="handleGoClick" :disabled="!validPlaces">Go!</button>
   </div>
 </template>
 
 <script>
-    import { ref, onMounted, reactive } from 'vue'
+    import { ref, onMounted, computed } from 'vue'
     import { useStore } from 'vuex';
     import AZInputGroup from '../utility/AZInputGroup.vue';
+    import SwapIcon from '../icons/SwapIcon.vue';
     export default {
         name: 'SideDrawerContainer',
         components: {
-          AZInputGroup
+            AZInputGroup,
+            SwapIcon
         },
         setup(){
           const store = useStore()
           const source = ref('');
           const destination = ref('')
+          const autocompleteSource = ref(null)
+          const autocompleteDestination = ref(null)
           const startLabel = "A",
                 destLabel = "Z"
-
-          const inputState = reactive({
-            autocompleteSource: null,
-            autocompleteDestination: null,
-          })
-
+          const validPlaces = computed(() => source.value && destination.value ? true : false)
           onMounted(() => {
-            inputState.autocompleteSource = new window.google.maps.places.Autocomplete(
+            autocompleteSource.value = new window.google.maps.places.Autocomplete(
               document.getElementById("source-loc")
             )
 
-            inputState.autocompleteDestination = new window.google.maps.places.Autocomplete(
+            autocompleteDestination.value = new window.google.maps.places.Autocomplete(
               document.getElementById("destination-loc")
             )
 
-            inputState.autocompleteSource.setComponentRestrictions({
+            autocompleteSource.value.setComponentRestrictions({
               country: ["us"]
             })
 
-            inputState.autocompleteDestination.setComponentRestrictions({
+            autocompleteDestination.value.setComponentRestrictions({
               country: ["us"]
             })
           })
@@ -52,11 +54,22 @@
             }
           }
 
+          const handleSwapLocations = () => {
+            if (!autocompleteDestination.value || !autocompleteSource.value) return
+            
+            const oldSourceAuto = autocompleteSource.value
+            const oldSourceAutoValue = autocompleteSource.value.getPlace().formatted_address
+            const oldDestinationAutoValue = autocompleteDestination.value.getPlace().formatted_address
+            autocompleteSource.value = autocompleteDestination.value
+            autocompleteDestination.value = oldSourceAuto
+            source.value = oldDestinationAutoValue
+            destination.value = oldSourceAutoValue
+            handleGeocodingSubmit(autocompleteSource.value, autocompleteDestination.value)
+          }
+
+          const handleGoClick = () => handleGeocodingSubmit(autocompleteSource.value, autocompleteDestination.value)
+
           const calculateAndDisplayRoute = (origin, destination) => {
-            /*
-                TODO - store these and do not create a new one each time
-                move store values into computed
-            */
             const directionService = new store.state.googleMaps.google.maps.DirectionsService()
             const directionRenderer = new store.state.googleMaps.google.maps.DirectionsRenderer({map: store.state.googleMaps.map, suppressMarkers: true})
             console.log(directionService, directionRenderer)
@@ -73,14 +86,10 @@
             .catch(err => console.log("error", err))
           }
           
-          const handleGeocodingSubmit = () => {
-            /*
-              TODO - // make sure both addresses are valid
-            // if not, show error styles
-            // make button disabled until valid
-            */
-            const sourcePlace = inputState.autocompleteSource.getPlace();
-            const destPlace = inputState.autocompleteDestination.getPlace();
+          const handleGeocodingSubmit = (source, destination) => {
+            
+            const sourcePlace = source.getPlace();
+            const destPlace = destination.getPlace();
 
             if (!sourcePlace || !sourcePlace.place_id) {
               console.log("return and show error for source")
@@ -107,7 +116,9 @@
           return {
             source,
             destination,
-            handleGeocodingSubmit
+            validPlaces,
+            handleSwapLocations,
+            handleGoClick
           }
         }
     }
@@ -118,5 +129,14 @@
     display: flex;
     flex-direction: column;
     width: 100%;
+  }
+
+  .swap-btn {
+    background-color: var(--pink-theme);
+    color: white;
+    width: 50px;
+    align-self: center;
+    margin-top: .5rem;
+    margin-bottom: .25rem;
   }
 </style>

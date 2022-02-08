@@ -74,7 +74,7 @@
     }
 
     #signup {
-        background-color: #d63384;
+        background-color: var(--pink-theme);
     }
 
 </style>
