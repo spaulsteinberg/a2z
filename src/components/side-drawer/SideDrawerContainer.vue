@@ -2,7 +2,7 @@
   <div class="source-dest-container">
     <AZInputGroup v-model.trim="source" id="source-loc" placeholder="Enter your starting point" labelText="Start: " hasMargin/>
     <button class="btn swap-btn" @click="handleSwapLocations">
-      <SwapIcon />
+      <SwapIcon fill="white" />
     </button>
     <AZInputGroup v-model.trim="destination" id="destination-loc" placeholder="Choose your destination" labelText="Destination: " :hasMargin="false"/>
     <button class="btn btn-primary mt-2" @click="handleGoClick" :disabled="!validPlaces">Go!</button>

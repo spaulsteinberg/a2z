@@ -1,8 +1,8 @@
 <template>
     <svg
         xmlns="http://www.w3.org/2000/svg"
-        :width="iWidth"
-        :height="iHeight"
+        :width="w"
+        :height="h"
         :fill="fill"
         class="bi bi-arrow-down-up"
         viewBox="0 0 16 16"
@@ -16,6 +16,7 @@
 
 <script>
     import { computed } from "vue"
+import useIcon from "../../composables/useIcon"
     export default {
         name: 'SwapIcon',
         props: {
@@ -36,9 +37,10 @@
             }
         },
         setup(props) {
+            const { width, height } = useIcon(props.width, props.height)
             return {
-                iHeight: computed(() => `${props.height}`),
-                iWidth: computed(() => `${props.width}`)
+                w: width,
+                h: height
             }
         }
     }

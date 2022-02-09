@@ -1,13 +1,18 @@
 <template>
-    <div class="az-block">
-        <div class="az-block-content">
-
+    <router-link :to="to" class="az-block-link">
+        <div class="az-block rounded">
+            <div class="az-block-content">
+                <span>{{linkText}}</span>
+            </div>
+            <div class="az-icon" v-if="icon">
+                <RightChevronIcon />
+            </div>
         </div>
-        <div class="az-icon"></div>
-    </div>
+    </router-link>
 </template>
 
 <script>
+import RightChevronIcon from "../icons/RightChevronIcon.vue";
     export default {
         name: 'AZBlockLink',
         props: {
@@ -25,9 +30,8 @@
                 required: false
             }
         },
-        setup(){
-
-        }
+        setup(){},
+        components: { RightChevronIcon }
     }
 </script>
 
@@ -35,7 +39,13 @@
     .az-block {
         display: flex;
         flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
         width: 100%;
-        background-color: gray;
+        padding: 0.75rem 1rem .75rem .5rem;
+        background-color: #E5E4E2;
+    }
+    .az-block-link {
+        text-decoration: none;
     }
 </style>

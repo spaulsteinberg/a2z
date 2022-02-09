@@ -17,16 +17,8 @@
         </AZAccordionItem>
         <AZAccordionItem title="Credentials" :parent="accordionParentId" headerId="credentialHeader" forTarget="#credentialInfo" forId="credentialInfo">
             <template v-slot:body>
-                <div>
-                    <router-link to="/profile/account/update/email">
-                        Update Email
-                    </router-link>
-                </div>
-                <div>
-                    <router-link to="/profile/account/change/password">
-                        Change Password
-                    </router-link>
-                </div>
+                <div class="mb-1"><AZBlockLink to="/profile/account/update/email" linkText="Update Email" /></div>
+                <AZBlockLink to="/profile/account/change/password" linkText="Change Password" />
             </template>
         </AZAccordionItem>
     </AZAccordion>
@@ -35,6 +27,7 @@
 <script>
     import AZAccordionItem from "../utility/AZAccordionItem.vue";
     import AZAccordion from "../utility/AZAccordion.vue";
+    import AZBlockLink from "../utility/AZBlockLink.vue";
     export default {
     name: "AccountAccordion",
     setup() {
@@ -43,7 +36,7 @@
             accordionParentId: "#accountAccordion",
         }
     },
-    components: { AZAccordionItem, AZAccordion }
+    components: { AZAccordionItem, AZAccordion, AZBlockLink }
 }
 </script>
 
