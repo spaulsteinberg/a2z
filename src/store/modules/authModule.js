@@ -3,7 +3,8 @@ import {
     createUserWithEmailAndPassword, 
     signInWithEmailAndPassword, 
     signOut, 
-    sendPasswordResetEmail 
+    sendPasswordResetEmail,
+    updateEmail
 } from 'firebase/auth';
 
 const authModule = {
@@ -19,6 +20,9 @@ const authModule = {
     mutations: {
         setUser(state, payload) {
             state.user = payload;
+        },
+        setUserEmail(state, payload) {
+            state.user.email = payload
         },
         setAuthStateIsReady(state, payload) {
             state.authIsReady = payload
@@ -49,6 +53,14 @@ const authModule = {
         },
         async resendPassword(context, { email }) { 
             await sendPasswordResetEmail(auth, email)
+        },
+        async updateEmail({commit}, { newEmail }){
+            try {
+                await updateEmail(auth.currentUser, newEmail)
+                commit('setUserEmail', newEmail)
+            } catch (err) {
+                throw new Error(err.code)
+            }
         }
     }
 }

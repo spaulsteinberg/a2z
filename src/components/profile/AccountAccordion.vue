@@ -15,23 +15,32 @@
                 notifications here
             </template>
         </AZAccordionItem>
-        <AZAccordionItem title="Credentials" :parent="accordionParentId" headerId="credentialsHeader" forTarget="#credentialsInfo" forId="credentialsInfo">
+        <AZAccordionItem title="Credentials" :parent="accordionParentId" headerId="credentialHeader" forTarget="#credentialInfo" forId="credentialInfo">
             <template v-slot:body>
-                credentials here
+                <div>
+                    <router-link to="/profile/account/update/email">
+                        Update Email
+                    </router-link>
+                </div>
+                <div>
+                    <router-link to="/profile/account/change/password">
+                        Change Password
+                    </router-link>
+                </div>
             </template>
         </AZAccordionItem>
     </AZAccordion>
 </template>
 
 <script>
-import AZAccordionItem from "../utility/AZAccordionItem.vue";
-import AZAccordion from "../utility/AZAccordion.vue";
+    import AZAccordionItem from "../utility/AZAccordionItem.vue";
+    import AZAccordion from "../utility/AZAccordion.vue";
     export default {
     name: "AccountAccordion",
     setup() {
         return {
             accordionId: "accountAccordion",
-            accordionParentId: "#accountAccordion"
+            accordionParentId: "#accountAccordion",
         }
     },
     components: { AZAccordionItem, AZAccordion }

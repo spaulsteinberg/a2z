@@ -4,7 +4,9 @@ import MainView from '../views/main/MainView.vue';
 import AccountView from '../views/profile/AccountView.vue';
 import LoginView from '../views/auth/LoginView.vue'
 import SignupView from '../views/auth/SignupView.vue'
+import UpdateEmailView from '../views/auth/UpdateEmailView.vue'
 import ResetPasswordView from '../views/auth/ResetPasswordView.vue'
+import ChangePasswordView from '../views/auth/ChangePasswordView.vue'
 import NotFound from '../views/NotFound.vue';
 import store from '../store/index'
 
@@ -24,6 +26,18 @@ const routes = [
         path: '/profile/account',
         name: 'Account',
         component: AccountView,
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/profile/account/update/email',
+        name: 'UpdateEmail',
+        component: UpdateEmailView,
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/profile/account/change/password',
+        name: 'ChangePassword',
+        component: ChangePasswordView,
         meta: { requiresAuth: true }
     },
     {
