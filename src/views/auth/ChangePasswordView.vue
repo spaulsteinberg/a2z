@@ -4,7 +4,7 @@
             <h2 class="text-center">Change Password</h2>
         </template>
         <template v-slot:content>
-            <ChangePassword :email="email" />
+            <ChangePassword :email="email" :store="store" />
         </template>
     </AZCard>
 </template>
@@ -17,9 +17,10 @@ import { computed } from "vue"
     export default {
         name: 'ChangePasswordView',
         setup(){
-            const { state } = useStore()
+            const store = useStore()
             return {
-                email: computed(() => state.auth.user.email)
+                email: computed(() => store.state.auth.user.email),
+                store
             }
         },
         components: {

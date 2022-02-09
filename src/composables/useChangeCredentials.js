@@ -4,8 +4,8 @@ import { useRouter } from 'vue-router';
 const useChangeCredentials = () => {
     const submitState = reactive({
         loading: false,
-        success: null,
-        error: null,
+        success: "",
+        error: "",
     });
     const router = useRouter()
 

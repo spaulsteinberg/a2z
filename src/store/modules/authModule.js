@@ -4,7 +4,8 @@ import {
     signInWithEmailAndPassword, 
     signOut, 
     sendPasswordResetEmail,
-    updateEmail
+    updateEmail,
+    updatePassword
 } from 'firebase/auth';
 
 const authModule = {
@@ -58,6 +59,13 @@ const authModule = {
             try {
                 await updateEmail(auth.currentUser, newEmail)
                 commit('setUserEmail', newEmail)
+            } catch (err) {
+                throw new Error(err.code)
+            }
+        },
+        async changePassword(_, { newPassword }){
+            try {
+                await updatePassword(auth.currentUser, newPassword)
             } catch (err) {
                 throw new Error(err.code)
             }

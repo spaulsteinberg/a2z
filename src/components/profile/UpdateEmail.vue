@@ -13,24 +13,15 @@
             <button class="btn btn-warning my-2 w-100" type="submit" >Submit</button>
             <button class="btn btn btn-outline-info my-2 w-100" type="button" @click="handleBackToAccounts">Back to Accounts</button>
         </template>
-        <div class="my-2 text-center" v-else>
-            <AZLoadingSpinner spinnerColor="primary" />
-        </div>
-        <div v-if="error">
-            <AZFeedbackAlert :text="error" severity="danger" :centered="true" />
-        </div>
-        <div v-if="success">
-            <AZFeedbackAlert :text="success" severity="primary" :centered="true" />
-        </div>
+        <ProfileFeedback :loading="loading" :error="error" :success="success" />
     </form>
 </template>
 
 <script>
     import { ref } from "vue"
     import reauthenticateWithEmailAndPassword from "../../firebase/reauthenticateWithEmailAndPassword"
-    import AZLoadingSpinner from "../utility/AZLoadingSpinner.vue"
-    import AZFeedbackAlert from "../utility/AZFeedbackAlert.vue"
     import useChangeCredentials from "../../composables/useChangeCredentials";
+    import ProfileFeedback from "./ProfileFeedback.vue";
 
     export default {
     name: "UpdateEmail",
@@ -52,8 +43,8 @@
 
         const handleSubmitEmail = async () => {
             loading.value = true;
-            error.value = null;
-            success.value = null
+            error.value = "";
+            success.value = ""
             try {
                 await reauthenticateWithEmailAndPassword(props.currentEmail, reenterPassword.value);
                 await props.store.dispatch("auth/updateEmail", { newEmail: newEmail.value });
@@ -78,7 +69,7 @@
             handleSubmitEmail
         };
     },
-    components: { AZLoadingSpinner, AZFeedbackAlert }
+    components: { ProfileFeedback }
 }
 </script>
 
