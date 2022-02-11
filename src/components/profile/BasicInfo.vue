@@ -1,5 +1,13 @@
 <template>
     <div class="basic-info-wrapper">
+        <img 
+            class="img-fluid rounded mx-auto my-3 profile-img" 
+            data-bs-toggle="tooltip" 
+            data-bs-placement="top" 
+            title="Change Profile Picture" 
+            alt="profile-pic" 
+            :src="photoUrl" 
+            @click="uploadPhoto"/>
         <div class="basic-info-name">
             <div class="name-input">
                 <AZInputGroup v-model.trim.lazy="firstName" id="firstName" placeholder="First Name" labelText="First Name:" hasMargin/>
@@ -8,19 +16,23 @@
                 <AZInputGroup v-model.trim.lazy="lastName" id="lastName" placeholder="Last Name" labelText="Last Name:" hasMargin/>
             </div>
         </div>
+        <div class="phone-input">
+            <AZInputGroup v-model.number.lazy="phoneNumber" id="phoneNumber" labelText="Phone Number:" hasMargin/>
+        </div>
         <div class="basic-info-address">
             <div class="main-addr">
                 <AZInputGroup v-model.trim.lazy="streetAddress" id="streetAddress" placeholder="street, city, state, zip" labelText="Address:" hasMargin/>
             </div>
             <div class="secondary-addr">
                 <div class="zip-addr">
-                <AZInputGroup v-model.trim.lazy="zipCode" id="zipCode" labelText="Zip Code:" hasMargin/>
+                    <AZInputGroup v-model.trim.lazy="zipCode" id="zipCode" labelText="Zip Code:" hasMargin/>
                 </div>
                 <div class="apt-addr">
                     <AZInputGroup v-model.trim.lazy="apt" id="apt" labelText="Apt #:" hasMargin/>
                 </div>
             </div>
         </div>
+        <button class="btn btn-warning edit-button mx-auto mt-1" @click="handleEditClick">Edit</button>
     </div>
 </template>
 
@@ -32,24 +44,49 @@ import AZInputGroup from "../utility/AZInputGroup.vue";
         components: { AZInputGroup },
         props: {},
         setup(props){
+            const photoUrl = ref(props.photoUrl ? props.photoUrl : require('../../../src/assets/person-outline.png'))
             const firstName = ref('')
             const lastName = ref('')
+            const phoneNumber = ref('')
             const streetAddress = ref('')
             const zipCode = ref('')
             const apt = ref('')
 
+            const uploadPhoto = () => {
+                console.log("upload photo")
+            }
+
+            const handleEditClick = () => {
+                console.log("edit")
+            }
+
             return {
+                photoUrl,
                 firstName,
                 lastName,
+                phoneNumber,
                 streetAddress,
                 zipCode,
-                apt
+                apt,
+                uploadPhoto,
+                handleEditClick
             }
         }
     }
 </script>
 
 <style scoped>
+
+    .edit-button {
+        max-width: 75px;
+    }
+    .profile-img {
+        max-width: 100%;
+        height: 100px;
+    }
+    .profile-img:hover {
+        cursor: pointer;
+    }
     .basic-info-wrapper {
         display: flex;
         flex-direction: column;
@@ -99,6 +136,12 @@ import AZInputGroup from "../utility/AZInputGroup.vue";
 
         .apt-addr {
             flex: 0 0 47.5%;
+        }
+        .phone-input {
+            width: 47.5%
+        }
+        .edit-button {
+            width: 30%;
         }
     }
 </style>
