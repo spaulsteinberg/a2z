@@ -6,19 +6,27 @@
     </button>
     <AZInputGroup v-model.trim="destination" id="destination-loc" placeholder="Choose your destination" labelText="Destination: " :hasMargin="false"/>
     <button class="btn btn-primary mt-2" @click="handleGoClick" :disabled="!validPlaces">Go!</button>
+    <div class="my-3" v-if="loading">
+      <AZFeedbackAlert text="Calculating Route..." centered includeSpinner/>
+    </div>
+    <div class="my-3" v-if="error" >
+      <AZFeedbackAlert :text="error" severity="danger" centered />
+    </div>
   </div>
 </template>
 
 <script>
-    import { ref, onMounted, computed } from 'vue'
+    import { ref, onMounted, computed, reactive, toRefs } from 'vue'
     import { useStore } from 'vuex';
     import AZInputGroup from '../utility/AZInputGroup.vue';
     import SwapIcon from '../icons/SwapIcon.vue';
+    import AZFeedbackAlert from '../utility/AZFeedbackAlert.vue';
     export default {
         name: 'SideDrawerContainer',
         components: {
-            AZInputGroup,
-            SwapIcon
+          AZInputGroup,
+          SwapIcon,
+          AZFeedbackAlert
         },
         setup(){
           const store = useStore()
@@ -29,6 +37,10 @@
           const startLabel = "A",
                 destLabel = "Z"
           const validPlaces = computed(() => source.value && destination.value ? true : false)
+          const geoState = reactive({
+            loading: false,
+            error: ""
+          })
           onMounted(() => {
             autocompleteSource.value = new window.google.maps.places.Autocomplete(
               document.getElementById("source-loc")
@@ -80,21 +92,28 @@
               console.log(result)
               store.state.googleMaps.directions.renderer.setDirections(result)
             })
-            .catch(err => console.log("error", err))
+            .catch(err => {
+              console.log("error", err)
+              geoState.error = "Could not display this route."
+            })
+            .finally(() => geoState.loading = false)
           }
           
           const handleGeocodingSubmit = (source, destination) => {
-            
+            geoState.loading = true
+            geoState.error = ""
             const sourcePlace = source.getPlace();
             const destPlace = destination.getPlace();
 
             if (!sourcePlace || !sourcePlace.place_id) {
-              console.log("return and show error for source")
+              geoState.loading = false
+              geoState.error = "Invalid Start Location. Please choose from the dropdown list."
               return
             }
 
             if (!destPlace || !destPlace.place_id){
-              console.log("return and show error for dest")
+              geoState.loading = false
+              geoState.error = "Invalid Destination Location. Please choose from the dropdown list."
               return
             }
 
@@ -114,6 +133,7 @@
             source,
             destination,
             validPlaces,
+            ...toRefs(geoState),
             handleSwapLocations,
             handleGoClick
           }
