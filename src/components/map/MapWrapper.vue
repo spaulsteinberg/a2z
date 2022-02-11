@@ -70,6 +70,7 @@ export default {
             store.commit('googleMaps/setGoogle', google)
             store.commit('googleMaps/setMap', new google.maps.Map(document.getElementById("map"), mapOptions))
             store.commit('googleMaps/setMapMounted', true)
+            store.commit('googleMaps/setDirectionsService')
           })
           .catch(err => {
             console.log('[ERROR]:', err)

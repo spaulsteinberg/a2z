@@ -8,6 +8,10 @@ const googleMapsModule = {
             source: null,
             destination: null,
         },
+        directions: {
+            service: null,
+            renderer: null
+        },
         mapMounted: false,
         loading: false,
         error: null
@@ -23,6 +27,10 @@ const googleMapsModule = {
         setMapLoading(state, payload) { state.loading = payload },
         setMapError(state, payload) { state.error = payload },
         setMapMounted(state, payload) { state.mapMounted = payload },
+        setDirectionsService(state, _) {
+            state.directions.service = new state.google.maps.DirectionsService()
+            state.directions.renderer = new state.google.maps.DirectionsRenderer({map: state.map, suppressMarkers: true})
+        },
         setStartMarker(state, { lat, lng, label }){
             state.markers.source = { lat, lng, label }
         },
