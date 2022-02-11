@@ -1,12 +1,4 @@
 
-const setMarker = (google, map, lat, lng, label) => {
-    return new google.maps.Marker({
-        position: { lat, lng },
-        map: map,
-        label: label
-    })
-}
-
 const googleMapsModule = {
     namespaced: true,
     state: {
@@ -14,7 +6,7 @@ const googleMapsModule = {
         map: null,
         markers: {
             source: null,
-            destination: null
+            destination: null,
         },
         mapMounted: false,
         loading: false,
@@ -22,6 +14,8 @@ const googleMapsModule = {
     },
     getters: {
         getMap: state => state.google,
+        getSourceMarker: state => state.markers.source,
+        getDestinationMarker: state => state.markers.destination
     },
     mutations: {
         setGoogle(state, payload) { state.google = payload },
@@ -30,10 +24,14 @@ const googleMapsModule = {
         setMapError(state, payload) { state.error = payload },
         setMapMounted(state, payload) { state.mapMounted = payload },
         setStartMarker(state, { lat, lng, label }){
-            state.markers.source = setMarker(state.google, state.map, lat, lng, label)
+            state.markers.source = { lat, lng, label }
         },
         setDestinationMarker(state, { lat, lng, label }){
-            state.markers.destination = setMarker(state.google, state.map, lat, lng, label)
+            state.markers.destination = { lat, lng, label }
+        },
+        removeMarkers(state, _) {
+            state.markers.source = null
+            state.markers.destination = null
         }
     }
 }

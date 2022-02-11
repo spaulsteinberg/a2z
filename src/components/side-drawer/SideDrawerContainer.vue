@@ -29,6 +29,7 @@
           const startLabel = "A",
                 destLabel = "Z"
           const validPlaces = computed(() => source.value && destination.value ? true : false)
+          let directionService, directionRenderer;
           onMounted(() => {
             autocompleteSource.value = new window.google.maps.places.Autocomplete(
               document.getElementById("source-loc")
@@ -45,6 +46,9 @@
             autocompleteDestination.value.setComponentRestrictions({
               country: ["us"]
             })
+
+            directionService = new store.state.googleMaps.google.maps.DirectionsService()
+            directionRenderer = new store.state.googleMaps.google.maps.DirectionsRenderer({map: store.state.googleMaps.map, suppressMarkers: true})
           })
 
           const getLngLat = location => {
@@ -70,8 +74,7 @@
           const handleGoClick = () => handleGeocodingSubmit(autocompleteSource.value, autocompleteDestination.value)
 
           const calculateAndDisplayRoute = (origin, destination) => {
-            const directionService = new store.state.googleMaps.google.maps.DirectionsService()
-            const directionRenderer = new store.state.googleMaps.google.maps.DirectionsRenderer({map: store.state.googleMaps.map, suppressMarkers: true})
+
             console.log(directionService, directionRenderer)
             directionService
             .route({
@@ -106,11 +109,11 @@
 
             const sourcePayload = { ...sourceLocation, label: startLabel }
             const destPayload = { ...destLocation, label: destLabel }
-            
-            calculateAndDisplayRoute(sourceLocation, destLocation)
 
             store.commit('googleMaps/setStartMarker', sourcePayload)
             store.commit('googleMaps/setDestinationMarker', destPayload)
+            
+            calculateAndDisplayRoute(sourceLocation, destLocation)
           }
 
           return {

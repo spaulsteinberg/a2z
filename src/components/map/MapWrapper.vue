@@ -6,10 +6,12 @@
 </template>
 
 <script>
-import { computed, onMounted, toRefs } from "vue"
+import { computed, onMounted, onUnmounted, watch } from "vue"
 import { Loader } from '@googlemaps/js-api-loader'
 import MapFeedback from "./MapFeedback.vue"
 import { useStore } from "vuex"
+import _ from 'lodash'
+
 export default {
     name: "MapWrapper",
     setup() {
@@ -26,6 +28,39 @@ export default {
             },
             zoom: 10
         };
+
+        // handles the markers, seemingly needs to be directly with the map component.
+        // this will watch for new props updated to the store from the side panel
+        // clear old markers, and create new ones
+        let markers = {
+          source: null,
+          destination: null
+        }
+
+        const addMarker = ( lat, lng, label ) => {
+          return new store.state.googleMaps.google.maps.Marker({
+            position: { lat, lng },
+            map: store.state.googleMaps.map,
+            label: label
+          })
+        }
+
+        const addSource = ({ lat, lng, label }) => {
+          markers.source = addMarker(lat, lng, label)
+        }
+
+        const removeSource = () => {
+          if (markers.source) markers.source.setMap(null)
+        }
+
+        const addDestination = ({ lat, lng, label }) => {
+          markers.destination = addMarker(lat, lng, label)
+        }
+
+        const removeDestination = () => {
+          if (markers.destination) markers.destination.setMap(null)
+        }
+
         onMounted(() => {
           store.commit('googleMaps/setMapLoading', true)
           store.commit('googleMaps/setMapError', '')
@@ -44,9 +79,31 @@ export default {
             store.commit('googleMaps/setMapLoading', false)
           })
         })
+
+        onUnmounted(() => {
+          store.commit('googleMaps/removeMarkers')
+        })
+
+        watch(() => _.cloneDeep(store.getters["googleMaps/getSourceMarker"]), newValues => {
+          console.log("WATCH SOURCE", newValues)
+          removeSource()
+          addSource(newValues)
+        }, {
+          deep: true
+        })
+
+        watch(() => _.cloneDeep(store.getters["googleMaps/getDestinationMarker"]), newValues => {
+          console.log("WATCH DEST", newValues)
+          removeDestination()
+          addDestination(newValues)
+        }, {
+          deep: true
+        })
+
+
         return {
           loading: computed(() => store.state.googleMaps.loading),
-          error: computed(() => store.state.googleMaps.error)
+          error: computed(() => store.state.googleMaps.error),
         };
     },
     components: { MapFeedback }
