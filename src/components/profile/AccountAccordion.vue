@@ -2,7 +2,7 @@
     <AZAccordion :id="accordionId">
         <AZAccordionItem title="Basic Info" :parent="accordionParentId" headerId="basicInfoHeader" forTarget="#basicInfo" forId="basicInfo">
             <template v-slot:body>
-                basic info here
+                <BasicInfo />
             </template>
         </AZAccordionItem>
         <AZAccordionItem title="Tickets" :parent="accordionParentId" headerId="ticketsHeader" forTarget="#ticketsInfo" forId="ticketsInfo">
@@ -28,6 +28,7 @@
     import AZAccordionItem from "../utility/AZAccordionItem.vue";
     import AZAccordion from "../utility/AZAccordion.vue";
     import AZBlockLink from "../utility/AZBlockLink.vue";
+    import BasicInfo from "./BasicInfo.vue";
     export default {
     name: "AccountAccordion",
     setup() {
@@ -36,7 +37,7 @@
             accordionParentId: "#accountAccordion",
         }
     },
-    components: { AZAccordionItem, AZAccordion, AZBlockLink }
+    components: { AZAccordionItem, AZAccordion, AZBlockLink, BasicInfo }
 }
 </script>
 
