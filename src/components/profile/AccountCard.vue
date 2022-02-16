@@ -12,13 +12,27 @@
 </template>
 
 <script>
+    import { onMounted } from "vue";
     import AZCard from "../utility/AZCard.vue";
     import AccountAccordion from "./AccountAccordion.vue";
+    import axios from 'axios'
+    import getFirebaseIdToken from "../../firebase/getFirebaseIdToken"
+    import { getAuth } from "firebase/auth";
     export default {
         name: 'AccountCard',
         components: { AZCard, AccountAccordion },
         setup(){
-
+            const auth = getAuth()
+            onMounted( async () => {
+                try {
+                    const token = await getFirebaseIdToken(auth.currentUser)
+                    axios.get("http://localhost:3000/api/v1/account", { headers: { token: token } })
+                    .then(res => console.log("success~", res))
+                    .catch(err => console.log("err", err))
+                } catch (err) {
+                    console.log("on mounted err")
+                }
+            })
         }
     }
 </script>

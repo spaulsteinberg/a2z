@@ -16,8 +16,11 @@
                 <AZInputGroup v-model.trim.lazy="lastName" id="lastName" placeholder="Last Name" labelText="Last Name:" hasMargin/>
             </div>
         </div>
-        <div class="phone-input">
+        <div class="single-line-input">
             <AZInputGroup v-model.number.lazy="phoneNumber" id="phoneNumber" labelText="Phone Number:" hasMargin/>
+        </div>
+        <div class="single-line-input">
+            <AZInputGroup v-model.trim.lazy="companyName" id="companyName" labelText="Company:" hasMargin/>
         </div>
         <div class="basic-info-address">
             <div class="main-addr">
@@ -48,6 +51,7 @@ import AZInputGroup from "../utility/AZInputGroup.vue";
             const firstName = ref('')
             const lastName = ref('')
             const phoneNumber = ref('')
+            const companyName = ref('')
             const streetAddress = ref('')
             const zipCode = ref('')
             const apt = ref('')
@@ -65,6 +69,7 @@ import AZInputGroup from "../utility/AZInputGroup.vue";
                 firstName,
                 lastName,
                 phoneNumber,
+                companyName,
                 streetAddress,
                 zipCode,
                 apt,
@@ -137,7 +142,7 @@ import AZInputGroup from "../utility/AZInputGroup.vue";
         .apt-addr {
             flex: 0 0 47.5%;
         }
-        .phone-input {
+        .single-line-input {
             width: 47.5%
         }
         .edit-button {
