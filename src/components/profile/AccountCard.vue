@@ -25,6 +25,7 @@
             const auth = getAuth()
             onMounted( async () => {
                 try {
+                    console.log("mounted")
                     const token = await getFirebaseIdToken(auth.currentUser)
                     axios.get("http://localhost:3000/api/v1/account", { headers: { token: token } })
                     .then(res => console.log("success~", res))
