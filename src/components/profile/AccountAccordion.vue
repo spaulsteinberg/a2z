@@ -2,7 +2,7 @@
     <AZAccordion :id="accordionId">
         <AZAccordionItem title="Basic Info" :parent="accordionParentId" headerId="basicInfoHeader" forTarget="#basicInfo" forId="basicInfo">
             <template v-slot:body>
-                <BasicInfo />
+                <BasicInfo :loading="accountLoading" :error="accountError" :store="store" :auth="auth" v-if="!accountLoading"/>
             </template>
         </AZAccordionItem>
         <AZAccordionItem title="Tickets" :parent="accordionParentId" headerId="ticketsHeader" forTarget="#ticketsInfo" forId="ticketsInfo">
@@ -31,6 +31,18 @@
     import BasicInfo from "./BasicInfo.vue";
     export default {
     name: "AccountAccordion",
+    props: {
+        store: Object,
+        auth: Object,
+        accountLoading: {
+            type: Boolean,
+            required: true
+        },
+        accountError: {
+            type: String,
+            required: true
+        }
+    },
     setup() {
         return {
             accordionId: "accountAccordion",

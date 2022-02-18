@@ -5,35 +5,48 @@
             <h2 class="text-center">My Account</h2>
         </template>
         <template v-slot:content>
-            <AccountAccordion />
+            <AccountAccordion :accountLoading="loading" :accountError="error" :store="store" :auth="auth" />
         </template>
     </AZCard>
     </div>
 </template>
 
 <script>
-    import { onMounted } from "vue";
+    import { onMounted, reactive, toRefs } from "vue";
     import AZCard from "../utility/AZCard.vue";
     import AccountAccordion from "./AccountAccordion.vue";
-    import axios from 'axios'
-    import getFirebaseIdToken from "../../firebase/getFirebaseIdToken"
     import { getAuth } from "firebase/auth";
+    import { useStore } from "vuex";
     export default {
         name: 'AccountCard',
         components: { AZCard, AccountAccordion },
         setup(){
             const auth = getAuth()
+            const store = useStore()
+            const accountState = reactive({
+                loading: false,
+                error: ''
+            })
+
             onMounted( async () => {
+                // TODO --- this is not actually waiting
+                // IF AN ACCOUNT ALREADY EXISTS DO NOT MAKE THIS CALL - its in state already
+                accountState.loading = true
+                accountState.error = ''
                 try {
-                    console.log("mounted")
-                    const token = await getFirebaseIdToken(auth.currentUser)
-                    axios.get("http://localhost:3000/api/v1/account", { headers: { token: token } })
-                    .then(res => console.log("success~", res))
-                    .catch(err => console.log("err", err))
+                    await store.dispatch("account/getAccount", auth.currentUser)
                 } catch (err) {
-                    console.log("on mounted err")
+                    console.log(err)
+                    accountState.error = "An error occurred fetching your account."
+                } finally {
+                    accountState.loading = false
                 }
             })
+            return {
+                ...toRefs(accountState),
+                store,
+                auth
+            }
         }
     }
 </script>

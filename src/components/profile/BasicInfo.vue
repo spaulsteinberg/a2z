@@ -1,4 +1,5 @@
 <template>
+    <template v-if="loading">Loading...</template>
     <div class="basic-info-wrapper">
         <img 
             class="img-fluid rounded mx-auto my-3 profile-img" 
@@ -46,29 +47,41 @@
 </template>
 
 <script>
-    import { ref } from "vue";
+    import { computed, ref } from "vue";
     import AZInputGroup from "../utility/AZInputGroup.vue";
     import getFirebaseIdToken from "../../firebase/getFirebaseIdToken";
     import axios from "axios";
     import { getAuth } from "firebase/auth";
+import { auth } from "../../firebase/config";
 
     export default {
         name: 'BasicInfo',
         components: { AZInputGroup },
-        props: {},
+        props: {
+            store: Object,
+            auth: Object,
+            loading: {
+                type: Boolean,
+                required: true
+            },
+            error: {
+                type: String,
+                required: true
+            }
+        },
         setup(props){
-            const photoUrl = ref(props.photoUrl ? props.photoUrl : require('../../../src/assets/person-outline.png'))
-            const firstName = ref('')
-            const lastName = ref('')
-            const phoneNumber = ref('')
-            const companyName = ref('')
-            const streetAddress = ref('')
-            const zipCode = ref('')
-            const apt = ref('')
+            console.log(props.store.state.account)
+            const photoUrl = ref(props.store.state.account.photoUrl) //ref(props.photoUrl ? props.photoUrl : require('../../../src/assets/person-outline.png'))
+            const firstName = ref(props.store.state.account.firstName)
+            const lastName = ref(props.store.state.account.lastName)
+            const phoneNumber = ref(props.store.state.account.phoneNumber)
+            const companyName = ref(props.store.state.account.companyName)
+            const streetAddress = ref(props.store.state.account.streetAddress)
+            const zipCode = ref(props.store.state.account.zipCode)
+            const apt = ref(props.store.state.account.apt)
             const isEditable = ref(false)
 
-            const auth = getAuth()
-
+            
             const uploadPhoto = () => {
                 console.log("upload photo")
             }
@@ -89,14 +102,9 @@
                     apt: apt.value
                 }
                 try {
-                    const token = await getFirebaseIdToken(auth.currentUser)
-                    axios.post("http://localhost:3000/api/v1/account", request, { headers: { token: token } })
-                    .then(res => {
-                        console.log("success", res)
-                    })
-                    .catch(err => console.log("ERROR", err))
+                    await props.store.dispatch("account/postAccount", { user: props.auth.currentUser, request: request})
                 } catch (err) {
-                    console.log("token error", err)
+                    console.log("err")
                 }
             }
 
