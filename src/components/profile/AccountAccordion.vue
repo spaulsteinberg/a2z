@@ -2,7 +2,9 @@
     <AZAccordion :id="accordionId">
         <AZAccordionItem title="Basic Info" :parent="accordionParentId" headerId="basicInfoHeader" forTarget="#basicInfo" forId="basicInfo">
             <template v-slot:body>
-                <BasicInfo :loading="accountLoading" :error="accountError" :store="store" :auth="auth" v-if="!accountLoading"/>
+                <BasicInfo :store="store" :auth="auth" v-if="!accountLoading && !accountError"/>
+                <AZFeedbackAlert text="Loading Account..." severity="primary" centered includeSpinner textAlign="center" v-else-if="accountLoading"/>
+                <AZFeedbackAlert text="An error occurred loading your account." severity="danger" centered v-else-if="accountError" />
             </template>
         </AZAccordionItem>
         <AZAccordionItem title="Tickets" :parent="accordionParentId" headerId="ticketsHeader" forTarget="#ticketsInfo" forId="ticketsInfo">
@@ -29,6 +31,7 @@
     import AZAccordion from "../utility/AZAccordion.vue";
     import AZBlockLink from "../utility/AZBlockLink.vue";
     import BasicInfo from "./BasicInfo.vue";
+    import AZFeedbackAlert from "../utility/AZFeedbackAlert.vue";
     export default {
     name: "AccountAccordion",
     props: {
@@ -49,10 +52,16 @@
             accordionParentId: "#accountAccordion",
         }
     },
-    components: { AZAccordionItem, AZAccordion, AZBlockLink, BasicInfo }
+    components: { AZAccordionItem, AZAccordion, AZBlockLink, BasicInfo, AZFeedbackAlert }
 }
 </script>
 
 
 <style scoped>
+.loading-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
 </style>

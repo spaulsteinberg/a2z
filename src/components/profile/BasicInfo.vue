@@ -1,5 +1,4 @@
 <template>
-    <template v-if="loading">Loading...</template>
     <div class="basic-info-wrapper">
         <img 
             class="img-fluid rounded mx-auto my-3 profile-img" 
@@ -11,67 +10,62 @@
             @click="uploadPhoto"/>
         <div class="basic-info-name">
             <div class="name-input">
-                <AZInputGroup v-model.trim.lazy="firstName" id="firstName" placeholder="First Name" labelText="First Name:" :disabled="!isEditable" hasMargin/>
+                <AZInputGroup v-model.trim.lazy="firstName" id="firstName" placeholder="First Name" labelText="First Name:" :disabled="!isEditable || reqLoading" hasMargin/>
             </div>
             <div class="name-input">
-                <AZInputGroup v-model.trim.lazy="lastName" id="lastName" placeholder="Last Name" labelText="Last Name:" :disabled="!isEditable" hasMargin/>
+                <AZInputGroup v-model.trim.lazy="lastName" id="lastName" placeholder="Last Name" labelText="Last Name:" :disabled="!isEditable || reqLoading" hasMargin/>
             </div>
         </div>
         <div class="single-line-input">
-            <AZInputGroup v-model.trim.lazy="phoneNumber" id="phoneNumber" labelText="Phone Number:" :disabled="!isEditable" hasMargin/>
+            <AZInputGroup v-model.trim.lazy="phoneNumber" id="phoneNumber" labelText="Phone Number:" :disabled="!isEditable || reqLoading" hasMargin/>
         </div>
         <div class="single-line-input">
-            <AZInputGroup v-model.trim.lazy="companyName" id="companyName" labelText="Company:" :disabled="!isEditable" hasMargin/>
+            <AZInputGroup v-model.trim.lazy="companyName" id="companyName" labelText="Company:" :disabled="!isEditable || reqLoading" hasMargin/>
         </div>
         <div class="basic-info-address">
             <div class="main-addr">
-                <AZInputGroup v-model.trim.lazy="streetAddress" id="streetAddress" placeholder="street, city, state, zip" labelText="Address:" :disabled="!isEditable" hasMargin/>
+                <AZInputGroup v-model.trim.lazy="streetAddress" id="streetAddress" placeholder="street, city, state, zip" labelText="Address:" :disabled="!isEditable || reqLoading" hasMargin/>
             </div>
             <div class="secondary-addr">
                 <div class="zip-addr">
-                    <AZInputGroup v-model.trim.lazy="zipCode" id="zipCode" labelText="Zip Code:" :disabled="!isEditable" hasMargin/>
+                    <AZInputGroup v-model.trim.lazy="zipCode" id="zipCode" labelText="Zip Code:" :disabled="!isEditable || reqLoading" hasMargin/>
                 </div>
                 <div class="apt-addr">
-                    <AZInputGroup v-model.trim.lazy="apt" id="apt" labelText="Apt #:" :disabled="!isEditable" hasMargin/>
+                    <AZInputGroup v-model.trim.lazy="apt" id="apt" labelText="Apt #:" :disabled="!isEditable || reqLoading" hasMargin/>
                 </div>
             </div>
         </div>
     </div>
     <div class="button-wrappers">
-        <button class="btn btn-warning basic-info-button mx-auto mt-1" @click="handleEditClick" v-if="!isEditable">Edit</button>
+        <AZLoadingSpinner spinnerColor="primary" v-if="reqLoading" />
         <template v-else>
-            <button class="btn btn-primary mx-1 mt-1" @click="submitInfo">Save Changes</button>
-            <button class="btn btn-outline-danger mx-1 mt-1" @click="handleEditClick">Cancel</button>
+            <button class="btn btn-warning mt-1" @click="handleEditClick" v-if="!isEditable">Edit</button>
+            <template v-else>
+                <button class="btn btn-primary mx-1 mt-1" @click="submitInfo">Save Changes</button>
+                <button class="btn btn-outline-danger mx-1 mt-1" @click="handleEditClick">Cancel</button>
+            </template>
         </template>
+    </div>
+    <div class="feedback-wrapper" v-if="reqError">
+        <AZFeedbackAlert :text="reqError" severity="danger" centered />
     </div>
 </template>
 
 <script>
-    import { computed, ref } from "vue";
+    import { reactive, ref, toRefs } from "vue";
     import AZInputGroup from "../utility/AZInputGroup.vue";
-    import getFirebaseIdToken from "../../firebase/getFirebaseIdToken";
-    import axios from "axios";
-    import { getAuth } from "firebase/auth";
-import { auth } from "../../firebase/config";
-
+    import AZFeedbackAlert from "../utility/AZFeedbackAlert.vue";
+import AZLoadingSpinner from "../utility/AZLoadingSpinner.vue";
     export default {
         name: 'BasicInfo',
-        components: { AZInputGroup },
+        components: { AZInputGroup, AZFeedbackAlert, AZLoadingSpinner },
         props: {
             store: Object,
             auth: Object,
-            loading: {
-                type: Boolean,
-                required: true
-            },
-            error: {
-                type: String,
-                required: true
-            }
         },
         setup(props){
             console.log(props.store.state.account)
-            const photoUrl = ref(props.store.state.account.photoUrl) //ref(props.photoUrl ? props.photoUrl : require('../../../src/assets/person-outline.png'))
+            const photoUrl = ref(props.store.state.account.photoUrl ? props.store.state.account.photoUrl : require('../../../src/assets/person-outline.png'))
             const firstName = ref(props.store.state.account.firstName)
             const lastName = ref(props.store.state.account.lastName)
             const phoneNumber = ref(props.store.state.account.phoneNumber)
@@ -81,16 +75,26 @@ import { auth } from "../../firebase/config";
             const apt = ref(props.store.state.account.apt)
             const isEditable = ref(false)
 
+            const postRequest = reactive({
+                reqLoading: false,
+                reqError: ''
+            })
+
             
             const uploadPhoto = () => {
+                if (!isEditable.value || postRequest.reqLoading) return 
                 console.log("upload photo")
             }
 
             const handleEditClick = () => {
+                postRequest.reqLoading = false;
+                postRequest.reqError = '';
                 isEditable.value = !isEditable.value
             }
 
             const submitInfo = async () => {
+                postRequest.reqLoading = true;
+                postRequest.reqError = ''
                 const request = { 
                     photoUrl: photoUrl.value,
                     firstName: firstName.value, 
@@ -103,8 +107,12 @@ import { auth } from "../../firebase/config";
                 }
                 try {
                     await props.store.dispatch("account/postAccount", { user: props.auth.currentUser, request: request})
+                    isEditable.value = false
                 } catch (err) {
                     console.log("err")
+                    postRequest.reqError = err;
+                } finally {
+                    postRequest.reqLoading = false
                 }
             }
 
@@ -118,6 +126,7 @@ import { auth } from "../../firebase/config";
                 zipCode,
                 apt,
                 isEditable,
+                ...toRefs(postRequest),
                 uploadPhoto,
                 handleEditClick,
                 submitInfo
@@ -128,9 +137,6 @@ import { auth } from "../../firebase/config";
 
 <style scoped>
 
-    .basic-info-button {
-        max-width: 75px;
-    }
     .profile-img {
         max-width: 100%;
         height: 100px;
@@ -169,6 +175,15 @@ import { auth } from "../../firebase/config";
         flex: 0 0 47.5%
     }
 
+    .feedback-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 1rem;
+        margin-right: auto;
+        margin-left: auto;
+    }
+
     @media screen and (max-width: 260px){ .secondary-addr { flex-direction: column; } }
     @media screen and (max-width: 360px){ .button-wrappers { flex-direction: column; } }
     @media screen and (min-width: 500px){
@@ -196,8 +211,8 @@ import { auth } from "../../firebase/config";
         .single-line-input {
             width: 47.5%
         }
-        .basic-info-button {
-            width: 30%;
+        .feedback-wrapper {
+            width: 50%;
         }
     }
 </style>
