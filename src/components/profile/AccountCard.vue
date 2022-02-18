@@ -29,17 +29,19 @@
             })
 
             onMounted( async () => {
-                // TODO --- this is not actually waiting
-                // IF AN ACCOUNT ALREADY EXISTS DO NOT MAKE THIS CALL - its in state already
-                accountState.loading = true
-                accountState.error = ''
-                try {
-                    await store.dispatch("account/getAccount", auth.currentUser)
-                } catch (err) {
-                    console.log(err)
-                    accountState.error = "An error occurred fetching your account."
-                } finally {
-                    accountState.loading = false
+                
+                if (!store.getters["account/getHasData"]) {
+                    console.log("getting account data...")
+                    accountState.loading = true
+                    accountState.error = ''
+                    try {
+                        await store.dispatch("account/getAccount", auth.currentUser)
+                    } catch (err) {
+                        console.log(err)
+                        accountState.error = "An error occurred fetching your account."
+                    } finally {
+                        accountState.loading = false
+                    }
                 }
             })
             return {

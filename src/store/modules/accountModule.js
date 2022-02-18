@@ -4,6 +4,7 @@ import axios from 'axios'
 const accountModule = {
     namespaced: true,
     state: {
+        hasData: false,
         photoUrl: '',
         firstName: '',
         lastName: '',
@@ -14,7 +15,7 @@ const accountModule = {
         apt: '',
     },
     getters: {
-        getFirstName: state => state.firstName
+        getHasData: state => state.hasData
     },
     mutations: {
         setPhotoUrl: (state, payload) => state.photoUrl = payload,
@@ -34,7 +35,8 @@ const accountModule = {
             state.streetAddress = streetAddress;
             state.zipCode = zipCode;
             state.apt = apt;
-        }
+        },
+        setHasData: (state, payload) => state.hasData = payload
     },
     actions: {
         async getAccount({ commit }, user){
@@ -42,6 +44,7 @@ const accountModule = {
                 const token = await getFirebaseIdToken(user)
                 const res = await axios.get(process.env.VUE_APP_ACCOUNT_PATH, { headers: { token: token } })
                 commit('setAllBasicFields', res.data.data)
+                commit('setHasData', true)
             } catch (err) {
                 console.log(err)
                 throw new Error("Something went wrong fetching account.")
