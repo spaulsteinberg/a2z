@@ -2,7 +2,7 @@
     <AZAccordion :id="accordionId">
         <AZAccordionItem title="Basic Info" :parent="accordionParentId" headerId="basicInfoHeader" forTarget="#basicInfo" forId="basicInfo">
             <template v-slot:body>
-                <BasicInfo :store="store" :auth="auth" v-if="!accountLoading && !accountError"/>
+                <BasicInfo v-if="!accountLoading && !accountError"/>
                 <AZFeedbackAlert text="Loading Account..." severity="primary" centered includeSpinner textAlign="center" v-else-if="accountLoading"/>
                 <AZFeedbackAlert text="An error occurred loading your account." severity="danger" centered v-else-if="accountError" />
             </template>
@@ -30,13 +30,11 @@
     import AZAccordionItem from "../utility/AZAccordionItem.vue";
     import AZAccordion from "../utility/AZAccordion.vue";
     import AZBlockLink from "../utility/AZBlockLink.vue";
-    import BasicInfo from "./BasicInfo.vue";
+    import BasicInfo from "./basic-info/BasicInfo.vue";
     import AZFeedbackAlert from "../utility/AZFeedbackAlert.vue";
     export default {
     name: "AccountAccordion",
     props: {
-        store: Object,
-        auth: Object,
         accountLoading: {
             type: Boolean,
             required: true

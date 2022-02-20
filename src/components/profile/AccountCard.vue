@@ -5,7 +5,7 @@
             <h2 class="text-center">My Account</h2>
         </template>
         <template v-slot:content>
-            <AccountAccordion :accountLoading="loading" :accountError="error" :store="store" :auth="auth" />
+            <AccountAccordion :accountLoading="loading" :accountError="error" />
         </template>
     </AZCard>
     </div>
@@ -45,9 +45,7 @@
                 }
             })
             return {
-                ...toRefs(accountState),
-                store,
-                auth
+                ...toRefs(accountState)
             }
         }
     }

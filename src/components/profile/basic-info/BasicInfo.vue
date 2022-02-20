@@ -1,13 +1,9 @@
 <template>
     <div class="basic-info-wrapper">
-        <img 
-            class="img-fluid rounded mx-auto my-3 profile-img" 
-            data-bs-toggle="tooltip" 
-            data-bs-placement="top" 
-            title="Change Profile Picture" 
-            alt="profile-pic" 
-            :src="photoUrl" 
-            @click="uploadPhoto"/>
+        <BasicInfoImage :photoUrl="photoUrl" :picLoading="picLoading" :uploadPhoto="uploadPhoto" v-if="!picLoading"/>
+        <BasicInfoUploadSpinner v-else/>
+        <BasicInfoError :error="picError" v-if="picError" />
+        <input type="file" accept="image/*" name="imageInput" @click="handleFileNameChange" @change="handleFileNameChange" ref="fileRef" hidden/>
         <div class="basic-info-name">
             <div class="name-input">
                 <AZInputGroup v-model.trim.lazy="firstName" id="firstName" placeholder="First Name" labelText="First Name:" :disabled="!isEditable || reqLoading" hasMargin/>
@@ -36,67 +32,84 @@
             </div>
         </div>
     </div>
-    <div class="button-wrappers">
-        <AZLoadingSpinner spinnerColor="primary" v-if="reqLoading" />
-        <template v-else>
-            <button class="btn btn-warning mt-1" @click="handleEditClick" v-if="!isEditable">Edit</button>
-            <template v-else>
-                <button class="btn btn-primary mx-1 mt-1" @click="submitInfo">Save Changes</button>
-                <button class="btn btn-outline-danger mx-1 mt-1" @click="handleEditClick">Cancel</button>
-            </template>
-        </template>
-    </div>
-    <div class="feedback-wrapper" v-if="reqError">
-        <AZFeedbackAlert :text="reqError" severity="danger" centered />
-    </div>
+    <BasicInfoButtons :reqLoading="reqLoading" :isEditable="isEditable" :handleEditClick="handleEditClick" :submitInfo="submitInfo" />
+    <BasicInfoError :error="reqError" v-if="reqError" />
 </template>
 
 <script>
-    import { reactive, ref, toRefs } from "vue";
-    import AZInputGroup from "../utility/AZInputGroup.vue";
-    import AZFeedbackAlert from "../utility/AZFeedbackAlert.vue";
-import AZLoadingSpinner from "../utility/AZLoadingSpinner.vue";
+    import { computed, reactive, ref, toRefs } from "vue";
+    import AZInputGroup from "../../utility/AZInputGroup.vue";
+    import { useStore } from "vuex";
+    import { getAuth } from "firebase/auth";
+    import BasicInfoUploadSpinner from "./BasicInfoUploadSpinner.vue";
+    import BasicInfoError from "./BasicInfoError.vue";
+    import BasicInfoImage from "./BasicInfoImage.vue";
+    import BasicInfoButtons from "./BasicInfoButtons.vue";
     export default {
         name: 'BasicInfo',
-        components: { AZInputGroup, AZFeedbackAlert, AZLoadingSpinner },
-        props: {
-            store: Object,
-            auth: Object,
-        },
-        setup(props){
-            console.log(props.store.state.account)
-            const photoUrl = ref(props.store.state.account.photoUrl ? props.store.state.account.photoUrl : require('../../../src/assets/person-outline.png'))
-            const firstName = ref(props.store.state.account.firstName)
-            const lastName = ref(props.store.state.account.lastName)
-            const phoneNumber = ref(props.store.state.account.phoneNumber)
-            const companyName = ref(props.store.state.account.companyName)
-            const streetAddress = ref(props.store.state.account.streetAddress)
-            const zipCode = ref(props.store.state.account.zipCode)
-            const apt = ref(props.store.state.account.apt)
+        components: { AZInputGroup, BasicInfoUploadSpinner, BasicInfoError, BasicInfoImage, BasicInfoButtons },
+        setup(){
+            const store = useStore();
+            const auth = getAuth()
+            const firstName = ref(store.state.account.firstName)
+            const lastName = ref(store.state.account.lastName)
+            const phoneNumber = ref(store.state.account.phoneNumber)
+            const companyName = ref(store.state.account.companyName)
+            const streetAddress = ref(store.state.account.streetAddress)
+            const zipCode = ref(store.state.account.zipCode)
+            const apt = ref(store.state.account.apt)
             const isEditable = ref(false)
+            const fileRef = ref(null)
 
             const postRequest = reactive({
                 reqLoading: false,
                 reqError: ''
             })
 
+            const profilePicRequest = reactive({
+                picLoading: false,
+                picError: ''
+            })
             
             const uploadPhoto = () => {
                 if (!isEditable.value || postRequest.reqLoading) return 
-                console.log("upload photo")
+                fileRef.value.click()
             }
 
-            const handleEditClick = () => {
+            const handleFileNameChange = async (event) => {
+                if (event.type === 'click' || event.target.files.length < 1) return;
+                profilePicRequest.picLoading = true;
+                profilePicRequest.picError = '';
+                try {
+                    let formData = new FormData();
+                    formData.append('imageInput', event.target.files[0]);
+                    await store.dispatch("account/postProfilePicture", { user: auth.currentUser, data: formData })
+                } 
+                catch (err) { profilePicRequest.picError = 'An error occurred on upload.' } 
+                finally { profilePicRequest.picLoading = false; }
+            }
+
+            const handleEditClick = action => {
                 postRequest.reqLoading = false;
                 postRequest.reqError = '';
-                isEditable.value = !isEditable.value
+                profilePicRequest.picLoading = false;
+                profilePicRequest.picError = '';
+                if (!action) {
+                    firstName.value = store.state.account.firstName
+                    lastName.value = store.state.account.lastName
+                    phoneNumber.value = store.state.account.phoneNumber
+                    companyName.value = store.state.account.companyName
+                    streetAddress.value = store.state.account.streetAddress
+                    zipCode.value = store.state.account.zipCode
+                    apt.value = store.state.account.apt
+                }
+                isEditable.value = action
             }
 
             const submitInfo = async () => {
                 postRequest.reqLoading = true;
                 postRequest.reqError = ''
                 const request = { 
-                    photoUrl: photoUrl.value,
                     firstName: firstName.value, 
                     lastName: lastName.value, 
                     phoneNumber: phoneNumber.value,
@@ -106,18 +119,18 @@ import AZLoadingSpinner from "../utility/AZLoadingSpinner.vue";
                     apt: apt.value
                 }
                 try {
-                    await props.store.dispatch("account/postAccount", { user: props.auth.currentUser, request: request})
+                    await store.dispatch("account/postAccount", { user: auth.currentUser, request: request})
                     isEditable.value = false
                 } catch (err) {
                     console.log("err")
-                    postRequest.reqError = err;
+                    postRequest.reqError = "An error occurred. Please try again.";
                 } finally {
                     postRequest.reqLoading = false
                 }
             }
 
             return {
-                photoUrl,
+                photoUrl: computed(() => store.state.account.photoUrl),
                 firstName,
                 lastName,
                 phoneNumber,
@@ -126,10 +139,13 @@ import AZLoadingSpinner from "../utility/AZLoadingSpinner.vue";
                 zipCode,
                 apt,
                 isEditable,
+                fileRef,
                 ...toRefs(postRequest),
+                ...toRefs(profilePicRequest),
                 uploadPhoto,
                 handleEditClick,
-                submitInfo
+                submitInfo,
+                handleFileNameChange
             }
         }
     }
@@ -139,7 +155,8 @@ import AZLoadingSpinner from "../utility/AZLoadingSpinner.vue";
 
     .profile-img {
         max-width: 100%;
-        height: 100px;
+        min-height: 100px;
+        max-height: 100px;
     }
     .profile-img:hover {
         cursor: pointer;
