@@ -43,11 +43,11 @@
                 loading.value = true;
                 error.value = null
                 await store.dispatch('auth/login', { email: email.value, password: password.value})
-                loading.value = false;
                 router.push('/profile/account') // change this
             } catch (err) {
                 console.log(err)
                 error.value = "Login failed. Please try again."
+            } finally {
                 loading.value = false
             }
         }

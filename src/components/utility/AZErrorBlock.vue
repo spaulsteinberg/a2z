@@ -1,5 +1,8 @@
 <template>
-    <div class="text-center text-danger" v-if="error">{{error}}</div>
+    <div :class="['text-danger', alignText]" v-if="error">
+        <small v-if="isSmall">{{error}}</small>
+        <span v-else>{{error}}</span>
+    </div>
 </template>
 
 <script>
@@ -9,6 +12,16 @@
             error: {
                 type: String,
                 required: true
+            },
+            isSmall: {
+                type: Boolean,
+                required: false,
+                default: false
+            },
+            alignText: {
+                type: String,
+                required: false,
+                default: 'text-center'
             }
         },
         setup(){}
