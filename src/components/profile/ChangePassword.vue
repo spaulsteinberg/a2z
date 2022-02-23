@@ -42,8 +42,8 @@
     import ProfileFeedback from "./ProfileFeedback.vue"
     import { useVuelidate } from '@vuelidate/core'
     import { minLength, maxLength, required } from '@vuelidate/validators'
-import AZErrorBlock from "../utility/AZErrorBlock.vue"
-import AZInputGroup from "../utility/AZInputGroup.vue"
+    import AZErrorBlock from "../utility/AZErrorBlock.vue"
+    import AZInputGroup from "../utility/AZInputGroup.vue"
     export default {
     name: "ChangePassword",
     props: {
