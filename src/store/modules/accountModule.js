@@ -12,7 +12,7 @@ const accountModule = {
         companyName: '',
         streetAddress: '',
         zipCode: '',
-        apt: '',
+        unit: '',
     },
     getters: {
         getHasData: state => state.hasData,
@@ -27,15 +27,15 @@ const accountModule = {
         setCompanyName: (state, payload) => { state.companyName = payload },
         setStreetAddress: (state, payload) => { state.streetAddress = payload },
         setZipCode: (state, payload) => { state.zipCode = payload },
-        setApt: (state, payload) => { state.apt = payload },
-        setAllBasicFields: (state, { firstName, lastName, phoneNumber, companyName, streetAddress, zipCode, apt }) => {
+        setUnit: (state, payload) => { state.apt = payload },
+        setAllBasicFields: (state, { firstName, lastName, phoneNumber, companyName, streetAddress, zipCode, unit }) => {
             state.firstName = firstName;
             state.lastName = lastName;
             state.phoneNumber = phoneNumber;
             state.companyName = companyName;
             state.streetAddress = streetAddress;
             state.zipCode = zipCode;
-            state.apt = apt;
+            state.unit = unit;
         },
         setHasData: (state, payload) => state.hasData = payload
     },

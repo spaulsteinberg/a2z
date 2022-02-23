@@ -24,9 +24,12 @@
                     id="firstName"
                     placeholder="First Name"
                     labelText="First Name:"
+                    :handleBlur="v.firstName.$touch"
+                    :isInvalid="v.firstName.$error"
                     :disabled="!isEditable || reqLoading"
                     hasMargin
                 />
+                <AZErrorBlock v-for="error of v.firstName?.$errors" :key="error.$uid" :error="'*' + error.$message" alignText="text-left" :isSmall="true"/>
             </div>
             <div class="name-input">
                 <AZInputGroup
@@ -34,9 +37,12 @@
                     id="lastName"
                     placeholder="Last Name"
                     labelText="Last Name:"
+                    :handleBlur="v.lastName.$touch"
+                    :isInvalid="v.lastName.$error"
                     :disabled="!isEditable || reqLoading"
                     hasMargin
                 />
+                <AZErrorBlock v-for="error of v.lastName?.$errors" :key="error.$uid" :error="'*' + error.$message" alignText="text-left" :isSmall="true"/>
             </div>
         </div>
         <div class="single-line-input">
@@ -47,9 +53,12 @@
                 v-model.trim.lazy="companyName"
                 id="companyName"
                 labelText="Company:"
+                :handleBlur="v.companyName.$touch"
+                :isInvalid="v.companyName.$error"
                 :disabled="!isEditable || reqLoading"
                 hasMargin
             />
+            <AZErrorBlock v-for="error of v.companyName?.$errors" :key="error.$uid" :error="'*' + error.$message" alignText="text-left" :isSmall="true"/>
         </div>
         <div class="basic-info-address">
             <div class="main-addr">
@@ -72,11 +81,11 @@
                         hasMargin
                     />
                 </div>
-                <div class="apt-addr">
+                <div class="unit-addr">
                     <AZInputGroup
-                        v-model.trim.lazy="apt"
-                        id="apt"
-                        labelText="Apt #:"
+                        v-model.trim.lazy="unit"
+                        id="unit"
+                        labelText="Unit #:"
                         :disabled="!isEditable || reqLoading"
                         hasMargin
                     />
@@ -89,6 +98,7 @@
         :isEditable="isEditable"
         :handleEditClick="handleEditClick"
         :submitInfo="submitInfo"
+        :submitDisabled="v.$invalid"
     />
     <BasicInfoError :error="reqError" v-if="reqError" />
 </template>
@@ -103,9 +113,12 @@ import BasicInfoError from "./BasicInfoError.vue";
 import BasicInfoImage from "./BasicInfoImage.vue";
 import BasicInfoButtons from "./BasicInfoButtons.vue";
 import BasicInfoPhoneInput from "./BasicInfoPhoneInput.vue";
+import { useVuelidate } from '@vuelidate/core'
+import { maxLength, required } from '@vuelidate/validators'
+import AZErrorBlock from "../../utility/AZErrorBlock.vue";
 export default {
     name: 'BasicInfo',
-    components: { AZInputGroup, BasicInfoUploadSpinner, BasicInfoError, BasicInfoImage, BasicInfoButtons, BasicInfoPhoneInput },
+    components: { AZInputGroup, BasicInfoUploadSpinner, BasicInfoError, BasicInfoImage, BasicInfoButtons, BasicInfoPhoneInput, AZErrorBlock },
     setup() {
         const store = useStore();
         const auth = getAuth()
@@ -115,7 +128,7 @@ export default {
         const companyName = ref(store.state.account.companyName)
         const streetAddress = ref(store.state.account.streetAddress)
         const zipCode = ref(store.state.account.zipCode)
-        const apt = ref(store.state.account.apt)
+        const unit = ref(store.state.account.unit)
         const isEditable = ref(false)
         const fileRef = ref(null)
 
@@ -128,6 +141,14 @@ export default {
             picLoading: false,
             picError: ''
         })
+
+        const rules = computed(() => ({
+            firstName: { required, maxLength: maxLength(30) },
+            lastName: { required, maxLength: maxLength(40) },
+            companyName: { required, maxLength: maxLength(50) }
+        }))
+
+        const v = useVuelidate(rules, { firstName, lastName, companyName })
 
         const handleFormatPhoneNumber = formattedNumber => phoneNumber.value = formattedNumber
 
@@ -161,12 +182,15 @@ export default {
                 companyName.value = store.state.account.companyName
                 streetAddress.value = store.state.account.streetAddress
                 zipCode.value = store.state.account.zipCode
-                apt.value = store.state.account.apt
+                unit.value = store.state.account.unit
             }
             isEditable.value = action
         }
 
         const submitInfo = async () => {
+            if (v.value.$invalid) {
+                return postRequest.reqError = "Please fill out all required fields."
+            }
             postRequest.reqLoading = true;
             postRequest.reqError = ''
             const request = {
@@ -176,7 +200,7 @@ export default {
                 companyName: companyName.value,
                 streetAddress: streetAddress.value,
                 zipCode: zipCode.value,
-                apt: apt.value
+                unit: unit.value
             }
             try {
                 await store.dispatch("account/postAccount", { user: auth.currentUser, request: request })
@@ -197,9 +221,10 @@ export default {
             companyName,
             streetAddress,
             zipCode,
-            apt,
+            unit,
             isEditable,
             fileRef,
+            v,
             handleFormatPhoneNumber,
             ...toRefs(postRequest),
             ...toRefs(profilePicRequest),
@@ -250,7 +275,7 @@ export default {
     width: 100%;
 }
 .zip-addr,
-.apt-addr {
+.unit-addr {
     flex: 0 0 47.5%;
 }
 
@@ -293,7 +318,7 @@ export default {
         flex: 0 0 47.5%;
     }
 
-    .apt-addr {
+    .unit-addr {
         flex: 0 0 47.5%;
     }
     .single-line-input {
