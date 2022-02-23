@@ -1,20 +1,34 @@
 <template>
     <form @submit.prevent="handleSubmitNewPassword">
-        <div class="form-group password-wrapper">
-            <label for="currentPassword">Current Password: </label>
-            <input id="currentPassword" type="password" class="form-control" v-model="currentPassword">
-        </div>
-        <div class="form-group password-wrapper">
-            <label for="updatePassword">New Password: </label>
-            <input id="updatePassword" type="password" class="form-control" v-model="newPassword">
-        </div>
-        <div class="form-group password-wrapper">
-            <label for="updateConfirmPassword">Confirm New Password: </label>
-            <input id="updateConfirmPassword" type="password" class="form-control" v-model="newConfirmPassword">
-        </div>
-
+        <AZInputGroup
+            type="password" 
+            v-model="currentPassword" 
+            id="currentPassword" 
+            labelText="Current Password: " 
+            :handleBlur="v.currentPassword.$touch" 
+            :isInvalid="v.currentPassword.$error"
+            :disabled="loading" />
+        <AZErrorBlock v-for="error of v.currentPassword?.$errors" :key="error.$uid" :error="'*' + error.$message" alignText="text-left" :isSmall="true"/>
+        <AZInputGroup 
+            type="password"
+            v-model="newPassword" 
+            id="newPassword" 
+            labelText="New Password: " 
+            :handleBlur="v.newPassword.$touch" 
+            :isInvalid="v.newPassword.$error"
+            :disabled="loading" />
+        <AZErrorBlock v-for="error of v.newPassword?.$errors" :key="error.$uid" :error="'*' + error.$message" alignText="text-left" :isSmall="true"/>
+        <AZInputGroup 
+            type="password"
+            v-model="newConfirmPassword" 
+            id="updateConfirmPassword" 
+            labelText="Confirm New Password: " 
+            :handleBlur="v.newConfirmPassword.$touch" 
+            :isInvalid="v.newConfirmPassword.$error"
+            :disabled="loading" />
+        <AZErrorBlock v-for="error of v.newConfirmPassword?.$errors" :key="error.$uid" :error="'*' + error.$message" alignText="text-left" :isSmall="true"/>
         <template v-if="!loading">
-            <button class="btn btn-danger my-2 w-100" type="submit">Change Password</button>
+            <button class="btn btn-danger my-2 w-100" type="submit" :disabled="v.$invalid">Change Password</button>
             <button class="btn btn btn-outline-info my-2 w-100" type="button" @click="handleBackToAccounts">Back to Accounts</button>
         </template>
         <ProfileFeedback :loading="loading" :error="error" :success="success" />
@@ -22,10 +36,14 @@
 </template>
 
 <script>
-    import { ref } from "vue"
+    import { computed, ref } from "vue"
     import useChangeCredentials from "../../composables/useChangeCredentials"
     import reauthenticateWithEmailAndPassword from "../../firebase/reauthenticateWithEmailAndPassword"
     import ProfileFeedback from "./ProfileFeedback.vue"
+    import { useVuelidate } from '@vuelidate/core'
+    import { minLength, maxLength, required } from '@vuelidate/validators'
+import AZErrorBlock from "../utility/AZErrorBlock.vue"
+import AZInputGroup from "../utility/AZInputGroup.vue"
     export default {
     name: "ChangePassword",
     props: {
@@ -43,10 +61,21 @@
         const newPassword = ref("");
         const newConfirmPassword = ref("");
         let { loading, error, success, handleBackToAccounts } = useChangeCredentials();
+
+        const rules = computed(() => ({
+            currentPassword: { required },
+            newPassword: { required, minLength: minLength(8), maxLength: maxLength(15), },
+            newConfirmPassword: { required, minLength: minLength(8), maxLength: maxLength(15), }
+        }))
+
+        const v = useVuelidate(rules, { currentPassword, newPassword, newConfirmPassword })
+
         const handleSubmitNewPassword = async () => {
-            // handle this validation with vuelidate when installed
+            if (v.value.$invalid) {
+                return error.value = "Please fill out all required fields."
+            }
             if (newPassword.value !== newConfirmPassword.value) {
-                return;
+                return error.value = "New and Confirm passwords must be matching.";
             }
             loading.value = true;
             error.value = "";
@@ -58,6 +87,7 @@
                 currentPassword.value = "";
                 newPassword.value = "";
                 newConfirmPassword.value = "";
+                v.value.$reset()
             }
             catch (err) {
                 console.log(err);
@@ -71,6 +101,7 @@
             currentPassword,
             newPassword,
             newConfirmPassword,
+            v,
             handleBackToAccounts,
             loading,
             error,
@@ -78,7 +109,7 @@
             handleSubmitNewPassword
         };
     },
-    components: { ProfileFeedback }
+    components: { ProfileFeedback, AZErrorBlock, AZInputGroup }
 }
 </script>
 
