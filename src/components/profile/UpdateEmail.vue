@@ -1,16 +1,24 @@
 <template>
     <form @submit.prevent="handleSubmitEmail">
-        <div class="form-group email-wrapper">
-            <label for="updateEmail">Email: </label>
-            <input id="updateEmail" type="email" class="form-control" v-model="newEmail">
-            
-        </div>
-        <div class="form-group email-wrapper my-2">
-            <label for="reenterPassword" class="text-danger">Please re-enter you password: </label>
-            <input id="reenterPassword" type="password" class="form-control" v-model="reenterPassword" required>
-        </div>
+        <AZInputGroup 
+            id="updateEmail" 
+            type="email"
+            labelText="Email:" 
+            v-model="newEmail" 
+            :handleBlur="v.newEmail.$touch"
+            :isInvalid="v.newEmail.$error"
+            :hasMargin="false" />
+        <AZErrorBlock v-for="error of v.newEmail?.$errors" :key="error.$uid" :error="'*' + error.$message" alignText="text-left" :isSmall="true"/>
+        <AZInputGroup 
+            id="reenterPassword" 
+            type="password" 
+            labelText="Please re-enter you password:"
+            v-model="reenterPassword"
+            :handleBlur="v.reenterPassword.$touch"
+            :isInvalid="v.reenterPassword.$error" />
+        <AZErrorBlock v-for="error of v.reenterPassword?.$errors" :key="error.$uid" :error="'*' + error.$message" alignText="text-left" :isSmall="true"/>
         <template v-if="!loading">
-            <button class="btn btn-warning my-2 w-100" type="submit" >Submit</button>
+            <button class="btn btn-warning my-2 w-100" type="submit" :disabled="v.$invalid">Submit</button>
             <button class="btn btn btn-outline-info my-2 w-100" type="button" @click="handleBackToAccounts">Back to Accounts</button>
         </template>
         <ProfileFeedback :loading="loading" :error="error" :success="success" />
@@ -18,11 +26,14 @@
 </template>
 
 <script>
-    import { ref } from "vue"
+    import { computed, ref } from "vue"
     import reauthenticateWithEmailAndPassword from "../../firebase/reauthenticateWithEmailAndPassword"
     import useChangeCredentials from "../../composables/useChangeCredentials";
     import ProfileFeedback from "./ProfileFeedback.vue";
-
+    import { useVuelidate } from '@vuelidate/core'
+    import { required, email } from '@vuelidate/validators'
+    import AZInputGroup from "../utility/AZInputGroup.vue";
+    import AZErrorBlock from "../utility/AZErrorBlock.vue";
     export default {
     name: "UpdateEmail",
     props: {
@@ -41,7 +52,17 @@
         const reenterPassword = ref("");
         let { loading, success, error, handleBackToAccounts } = useChangeCredentials()
 
+        const rules = computed(() => ({
+            newEmail: { required, email },
+            reenterPassword: { required }
+        }))
+
+        const v = useVuelidate(rules, { newEmail, reenterPassword })
+
         const handleSubmitEmail = async () => {
+            if (v.value.$invalid) {
+                return error.value = "Please fill out all required fields."
+            }
             loading.value = true;
             error.value = "";
             success.value = ""
@@ -50,6 +71,7 @@
                 await props.store.dispatch("auth/updateEmail", { newEmail: newEmail.value });
                 success.value = `Successfully changed email to ${newEmail.value}`
                 reenterPassword.value = ''
+                v.value.$reset()
             }
             catch (err) {
                 console.log(err);
@@ -62,6 +84,7 @@
         return {
             newEmail,
             reenterPassword,
+            v,
             loading, 
             success,
             error,
@@ -69,12 +92,6 @@
             handleSubmitEmail
         };
     },
-    components: { ProfileFeedback }
+    components: { ProfileFeedback, AZInputGroup, AZErrorBlock }
 }
 </script>
-
-<style scoped>
-    .email-wrapper {
-        max-width: 490px;
-    }
-</style>
