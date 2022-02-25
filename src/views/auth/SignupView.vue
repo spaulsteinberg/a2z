@@ -12,9 +12,15 @@
                     labelText="Email"
                     :handleBlur="v.email.$touch"
                     :isInvalid="v.email.$error"
-                    :hasMargin="false"
+                    hasMargin
                 />
-                <AZErrorBlock v-for="error of v.email?.$errors" :key="error.$uid" :error="'*' + error.$message" alignText="text-left" :isSmall="true"/>
+                <AZErrorBlock
+                    v-for="error of v.email?.$errors"
+                    :key="error.$uid"
+                    :error="'*' + error.$message"
+                    alignText="text-left"
+                    :isSmall="true"
+                />
                 <AZInputGroup
                     type="password"
                     id="password"
@@ -24,7 +30,29 @@
                     :isInvalid="v.password.$error"
                     hasMargin
                 />
-                <AZErrorBlock v-for="error of v.password?.$errors" :key="error.$uid" :error="'*' + error.$message" alignText="text-left" :isSmall="true"/>
+                <AZErrorBlock
+                    v-for="error of v.password?.$errors"
+                    :key="error.$uid"
+                    :error="'*' + error.$message"
+                    alignText="text-left"
+                    :isSmall="true"
+                />
+                <AZInputGroup
+                    type="text"
+                    id="companyName"
+                    v-model="companyName"
+                    labelText="Company Name:"
+                    :handleBlur="v.companyName.$touch"
+                    :isInvalid="v.companyName.$error"
+                    :hasMargin="false"
+                />
+                <AZErrorBlock
+                    v-for="error of v.companyName?.$errors"
+                    :key="error.$uid"
+                    :error="'*' + error.$message"
+                    alignText="text-left"
+                    :isSmall="true"
+                />
                 <button
                     class="btn btn-primary auth-page-button"
                     type="submit"
@@ -54,7 +82,7 @@ import useAuthState from '../../composables/useAuthState';
 import AZErrorBlock from "../../components/utility/AZErrorBlock.vue";
 import { useVuelidate } from '@vuelidate/core'
 import { minLength, maxLength, required, email as VuelidateEmail } from '@vuelidate/validators'
-import { computed } from "vue";
+import { computed, ref } from "vue";
 
 export default {
     name: 'SignupView',
@@ -69,12 +97,15 @@ export default {
 
         const { store, router, email, password, loading, error } = useAuthState();
 
+        const companyName = ref('')
+
         const rules = computed(() => ({
             email: { required, VuelidateEmail },
-            password: { required, minLength: minLength(8), maxLength: maxLength(15), }
+            password: { required, minLength: minLength(8), maxLength: maxLength(15), },
+            companyName: { required }
         }))
 
-        const v = useVuelidate(rules, { email, password })
+        const v = useVuelidate(rules, { email, password, companyName })
 
 
         const handleSignup = async () => {
@@ -83,10 +114,12 @@ export default {
             }
             loading.value = true
             error.value = null
+            const request = { companyName: companyName.value, firstName: '', lastName: '', phoneNumber: '', photoUrl: '', streetAddress: '', unit: '', zipCode: ''}
             try {
-                await store.dispatch('auth/signup', { email: email.value, password: password.value })
+                const user = await store.dispatch('auth/signup', { email: email.value, password: password.value })
+                await store.dispatch('account/postAccount', { user: user.auth.currentUser, request: request })
                 loading.value = false
-                router.push('/profile/account') // change this to main menu in future
+                router.push('/') // change this to main menu in future
             } catch (err) {
                 console.log(err)
                 error.value = 'Could not sign up. Please try again.'
@@ -95,7 +128,7 @@ export default {
         }
 
         return {
-            email, password, v, error, loading, handleSignup
+            email, password, companyName, v, error, loading, handleSignup
         }
     }
 }

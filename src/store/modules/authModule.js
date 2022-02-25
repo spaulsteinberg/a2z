@@ -35,6 +35,7 @@ const authModule = {
             const res = await createUserWithEmailAndPassword(auth, email, password)
             if(res) {
                 commit('setUser', res.user)
+                return res.user
             } else {
                 throw new Error("Could not complete sign up.")
             }
