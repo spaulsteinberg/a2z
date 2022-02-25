@@ -1,9 +1,8 @@
 import getFirebaseIdToken from '../../firebase/getFirebaseIdToken'
 import axios from 'axios'
 
-const accountModule = {
-    namespaced: true,
-    state: {
+const initialState = () => {
+    return {
         hasData: false,
         photoUrl: '',
         firstName: '',
@@ -13,7 +12,12 @@ const accountModule = {
         streetAddress: '',
         zipCode: '',
         unit: '',
-    },
+    }
+}
+
+const accountModule = {
+    namespaced: true,
+    state: initialState,
     getters: {
         getHasData: state => state.hasData,
         getPhotoUrl: state => state.photoUrl,
@@ -37,7 +41,13 @@ const accountModule = {
             state.zipCode = zipCode;
             state.unit = unit;
         },
-        setHasData: (state, payload) => state.hasData = payload
+        setHasData: (state, payload) => state.hasData = payload,
+        reset: state => {
+            const s = initialState();
+            Object.keys(s).forEach(key => {
+                state[key] = s[key]
+            })
+        }
     },
     actions: {
         async getAccount({ commit }, user) {

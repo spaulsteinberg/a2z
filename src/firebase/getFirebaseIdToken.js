@@ -1,4 +1,5 @@
 
+// get a new access token for a user to use for back end requests
 const getFirebaseIdToken = async (user) => {
     try {
         return await user.getIdToken(true)

@@ -1,5 +1,6 @@
 import { getAuth, reauthenticateWithCredential, EmailAuthProvider } from "firebase/auth"
 
+// reauthenticate with an email/password credential.
 const reauthenticateWithEmailAndPassword = (email, password) => {
     const auth = getAuth()
     const credential = EmailAuthProvider.credential(email, password)
