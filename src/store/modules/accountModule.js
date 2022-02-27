@@ -4,6 +4,8 @@ import axios from 'axios'
 const initialState = () => {
     return {
         hasData: false,
+        error: '',
+        isLoading: false,
         photoUrl: '',
         firstName: '',
         lastName: '',
@@ -20,6 +22,8 @@ const accountModule = {
     state: initialState,
     getters: {
         getHasData: state => state.hasData,
+        getError: state => state.error,
+        getIsLoading: state => state.isLoading,
         getPhotoUrl: state => state.photoUrl,
         getFirstName: state => state.firstName
     },
@@ -42,6 +46,8 @@ const accountModule = {
             state.unit = unit;
         },
         setHasData: (state, payload) => state.hasData = payload,
+        setError: (state, payload) => state.error = payload,
+        setIsLoading: (state, payload) => state.isLoading = payload,
         reset: state => {
             const s = initialState();
             Object.keys(s).forEach(key => {
@@ -52,6 +58,9 @@ const accountModule = {
     actions: {
         async getAccount({ commit }, user) {
             try {
+                commit('setIsLoading', true)
+                commit('setError', '')
+                commit('setHasData', false)
                 const token = await getFirebaseIdToken(user)
                 const res = await axios.get(process.env.VUE_APP_ACCOUNT_PATH, { headers: { token: token } })
                 commit('setAllBasicFields', res.data.data)
@@ -59,7 +68,9 @@ const accountModule = {
                 commit('setHasData', true)
             } catch (err) {
                 console.log(err)
-                throw new Error("Something went wrong fetching account.")
+                commit('setError', 'Something went wrong.')
+            } finally {
+                commit('setIsLoading', false)
             }
         },
         async postAccount({ commit }, payload) {

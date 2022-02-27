@@ -2,6 +2,7 @@ import { createStore, /* createLogger */ } from 'vuex';
 import accountModule from './modules/accountModule';
 import authModule from './modules/authModule';
 import googleMapsModule from './modules/googleMapsModule';
+import ticketModule from './modules/ticketModule';
 
 
 const store = createStore({
@@ -9,7 +10,8 @@ const store = createStore({
     modules: {
         auth: authModule,
         googleMaps: googleMapsModule,
-        account: accountModule
+        account: accountModule,
+        ticket: ticketModule
     }
 })
 

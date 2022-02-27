@@ -5,14 +5,18 @@
             <h2 class="text-center">My Account</h2>
         </template>
         <template v-slot:content>
-            <AccountAccordion :accountLoading="loading" :accountError="error" />
+            <AccountAccordion 
+                :accountLoading="accountLoading" 
+                :accountError="accountError"
+                :ticketLoading="ticketLoading"
+                :ticketError="ticketError" />
         </template>
     </AZCard>
     </div>
 </template>
 
 <script>
-    import { onMounted, reactive, toRefs } from "vue";
+    import { computed, onMounted, reactive, toRefs } from "vue";
     import AZCard from "../utility/AZCard.vue";
     import AccountAccordion from "./AccountAccordion.vue";
     import { getAuth } from "firebase/auth";
@@ -23,29 +27,25 @@
         setup(){
             const auth = getAuth()
             const store = useStore()
-            const accountState = reactive({
-                loading: false,
-                error: ''
-            })
+
+            const accountHasData = computed(() => store.state.account.hasData)
+            const accountLoading = computed(() => store.state.account.isLoading)
+            const accountError = computed(() => store.state.account.error)
+
+            const ticketHasData = computed(() => store.state.ticket.hasData)
+            const ticketLoading = computed(() => store.state.ticket.isLoading)
+            const ticketError = computed(() => store.state.ticket.error)
 
             onMounted( async () => {
-                
-                if (!store.getters["account/getHasData"]) {
-                    console.log("getting account data...")
-                    accountState.loading = true
-                    accountState.error = ''
-                    try {
-                        await store.dispatch("account/getAccount", auth.currentUser)
-                    } catch (err) {
-                        console.log(err)
-                        accountState.error = "An error occurred fetching your account."
-                    } finally {
-                        accountState.loading = false
-                    }
+                if (!accountHasData.value) {
+                    store.dispatch("account/getAccount", auth.currentUser)
+                }
+                if (!ticketHasData.value) {
+                    store.dispatch("ticket/getTickets", { user: auth.currentUser })
                 }
             })
             return {
-                ...toRefs(accountState)
+                accountLoading, accountError, ticketLoading, ticketError
             }
         }
     }

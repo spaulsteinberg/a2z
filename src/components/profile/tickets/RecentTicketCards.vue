@@ -1,0 +1,46 @@
+<template>
+    <template v-if="ticketsExist">
+    <!-- 
+        TODO -- add progress number for bar
+             -- on click of view details, open a modal to edit fields
+             -- create a view more at the bottom to link to the ticket table
+    -->
+        <TicketCard 
+            v-for="(ticket, index) of tickets" 
+            :key="ticket.ticketId"
+            :tripDuration="ticket.est_duration" 
+            :tripValue="ticket.total"
+            :startPlaceFormatted="ticket.start_city_state"
+            :endPlaceFormatted="ticket.end_city_state"
+            :addMargin="index !== lastIndex">
+        </TicketCard>
+    </template>
+    <AZFeedbackAlert text="No tickets to display!" severity="primary" centered v-else />
+</template>
+
+<script>
+import { computed } from "vue"
+import { useStore } from "vuex"
+import TicketCard from "../../ticket/TicketCard.vue"
+import AZFeedbackAlert from "../../utility/AZFeedbackAlert.vue"
+
+export default {
+    name: 'RecentTicketCards',
+    components: { TicketCard, AZFeedbackAlert },
+    props: {},
+    setup(){
+        const { state } = useStore()
+        const tickets = computed(() => state.ticket.tickets)
+        const ticketsExist = computed(() => state.ticket.tickets.length > 0)
+        const lastIndex = computed(() => state.ticket.tickets.length - 1)
+
+        return {
+            tickets,
+            ticketsExist,
+            lastIndex
+        }
+    }
+}
+</script>
+
+<style scoped></style>

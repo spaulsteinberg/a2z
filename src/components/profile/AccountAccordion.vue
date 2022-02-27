@@ -9,7 +9,9 @@
         </AZAccordionItem>
         <AZAccordionItem title="Tickets" :parent="accordionParentId" headerId="ticketsHeader" forTarget="#ticketsInfo" forId="ticketsInfo">
             <template v-slot:body>
-                tickets here
+                <RecentTicketCards v-if="!ticketLoading && !ticketError" />
+                <AZFeedbackAlert text="Loading Tickets..." severity="primary" centered includeSpinner textAlign="center" v-else-if="ticketLoading"/>
+                <AZFeedbackAlert text="An error occurred loading your tickets." severity="danger" centered v-else-if="ticketError" />
             </template>
         </AZAccordionItem>
         <AZAccordionItem title="Notifications" :parent="accordionParentId" headerId="notificationssHeader" forTarget="#notificationsInfo" forId="notificationsInfo">
@@ -32,6 +34,7 @@
     import AZBlockLink from "../utility/AZBlockLink.vue";
     import BasicInfo from "./basic-info/BasicInfo.vue";
     import AZFeedbackAlert from "../utility/AZFeedbackAlert.vue";
+    import RecentTicketCards from "./tickets/RecentTicketCards.vue";
     export default {
     name: "AccountAccordion",
     props: {
@@ -42,7 +45,15 @@
         accountError: {
             type: String,
             required: true
-        }
+        },
+        ticketLoading: {
+            type: Boolean,
+            required: true
+        },
+        ticketError: {
+            type: String, 
+            required: true
+        },
     },
     setup() {
         return {
@@ -50,7 +61,7 @@
             accordionParentId: "#accountAccordion",
         }
     },
-    components: { AZAccordionItem, AZAccordion, AZBlockLink, BasicInfo, AZFeedbackAlert }
+    components: { AZAccordionItem, AZAccordion, AZBlockLink, BasicInfo, AZFeedbackAlert, RecentTicketCards }
 }
 </script>
 
