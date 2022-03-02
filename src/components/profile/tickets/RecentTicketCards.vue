@@ -1,19 +1,17 @@
 <template>
     <template v-if="ticketsExist">
-    <!-- 
-        TODO -- add progress number for bar
-             -- on click of view details, open a modal to edit fields
-             -- create a view more at the bottom to link to the ticket table
-    -->
         <TicketCard 
-            v-for="(ticket, index) of tickets" 
+            v-for="ticket of tickets.slice(0, 5)" 
             :key="ticket.ticketId"
             :tripDuration="ticket.est_duration" 
             :tripValue="ticket.total"
             :startPlaceFormatted="ticket.start_city_state"
             :endPlaceFormatted="ticket.end_city_state"
-            :addMargin="index !== lastIndex">
+            :status="ticket.hasStatus">
         </TicketCard>
+        <div class="text-center">
+            <button class="btn btn-primary"><router-link to="/profile/account/tickets" class="view-all">View All</router-link></button>
+        </div>
     </template>
     <AZFeedbackAlert text="No tickets to display!" severity="primary" centered v-else />
 </template>
@@ -32,15 +30,18 @@ export default {
         const { state } = useStore()
         const tickets = computed(() => state.ticket.tickets)
         const ticketsExist = computed(() => state.ticket.tickets.length > 0)
-        const lastIndex = computed(() => state.ticket.tickets.length - 1)
 
         return {
             tickets,
             ticketsExist,
-            lastIndex
         }
     }
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.view-all {
+    text-decoration: none;
+    color: white;
+}
+</style>

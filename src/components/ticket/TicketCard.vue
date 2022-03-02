@@ -1,5 +1,5 @@
 <template>
-    <div :class="['card', addMargin && 'mb-3']">
+    <div class="card mb-3">
         <div class="card-body">
             <div class="ticket-place-container">
                 <div class="ticket-place">{{ startPlaceFormatted }}</div>
@@ -9,12 +9,14 @@
                 <div class="ticket-place dest-ticket-place">{{ endPlaceFormatted }}</div>
                 <div class="text-center duration-box mt-2 mb-2">{{ tripDuration }} </div>
                 <div class="col mb-3">
-                    <AZProgress variant="bg-success" :value="0" striped />
+                    <AZProgress variant="bg-success" :value="ticketStatus" striped />
                 </div>
             </div>
-            <div class="ticket-place-container">
-                <div class="ticket-price">${{ tripValue }}</div>
-                <div class="ticket-view-details text-end">View Details</div>
+            <div class="ticket-place-container-footer">
+                <div class="ticket-price">${{ tripValue.toFixed(2) }}</div>
+                <div class="ticket-view-details text-end">
+                  <button class="btn btn-light">View Details</button>
+                </div>
             </div>
         </div>
     </div>
@@ -23,6 +25,7 @@
 <script>
 import TruckIcon from "../icons/TruckIcon.vue";
 import AZProgress from "../utility/AZProgress.vue";
+import TicketStatus from '../../constants/TicketStatus'
 export default {
     name: "TicketCard",
     props: {
@@ -44,21 +47,31 @@ export default {
             type: Number,
             required: true
         },
-        addMargin: {
-          type: Boolean,
-          default: false,
-          required: false,
+        status: {
+          type: String,
+          required: true
         }
     },
-    components: { TruckIcon, AZProgress }
+    setup(props){
+      // temporary
+      const ticketStatus = props.status === TicketStatus.OPEN ? 0 : props.status === TicketStatus.IN_PROGRESS ? 50 : 100
+      return {
+        ticketStatus,
+      }
+    },
+    components: { TruckIcon, AZProgress },
 }
 </script>
 
 <style scoped>
-.ticket-place-container {
+.ticket-place-container, .ticket-place-container-footer {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+}
+
+.ticket-place-container-footer {
+  align-items: center;
 }
 .ticket-place {
   flex: 0 0 40%;

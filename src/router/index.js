@@ -7,6 +7,7 @@ import SignupView from '../views/auth/SignupView.vue'
 import UpdateEmailView from '../views/auth/UpdateEmailView.vue'
 import ResetPasswordView from '../views/auth/ResetPasswordView.vue'
 import ChangePasswordView from '../views/auth/ChangePasswordView.vue'
+import TicketView from '../views/ticket/TicketView';
 import NotFound from '../views/NotFound.vue';
 import store from '../store/index'
 
@@ -20,6 +21,12 @@ const routes = [
         path: '/explore',
         name: 'Explore',
         component: MainView,
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/profile/account/tickets',
+        name: 'Ticket',
+        component: TicketView,
         meta: { requiresAuth: true }
     },
     {

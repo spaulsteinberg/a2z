@@ -6,6 +6,7 @@ const initialState = () => {
         hasData: false,
         isLoading: false,
         error: '',
+        filterValue: '',
         tickets: []
     }
 }
@@ -13,12 +14,21 @@ const initialState = () => {
 const ticketModule = {
     namespaced: true,
     state: initialState,
+    getters: {
+        getHasData: state => state.hasData,
+        getFilterValue: state => state.filterValue,
+        getFilteredTickets: state => { 
+            if (!state.filterValue) return state.tickets
+            return state.tickets.filter(ticket => ticket.ticketId.includes(state.filterValue))
+        }
+    },
     mutations: {
         setHasData: (state, payload) => state.hasData = payload,
         setIsLoading: (state, payload) => state.isLoading = payload,
         setError: (state, payload) => state.error = payload,
         setTickets: (state, payload) => state.tickets = payload,
-        addTicket: (state, payload) => { state.tickets.push(payload) }
+        addTicket: (state, payload) => { state.tickets.push(payload) },
+        setFilterValue: (state, payload) => state.filterValue = payload
     },
     actions: {
         async getTickets({ commit }, payload) {
