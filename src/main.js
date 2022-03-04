@@ -4,6 +4,7 @@ import router from './router'
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './assets/main.css'
+import 'element-plus/dist/index.css'
 
 import store from './store/index';
 import { auth } from './firebase/config'

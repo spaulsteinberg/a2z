@@ -15,7 +15,7 @@
             <div class="ticket-place-container-footer">
                 <div class="ticket-price">${{ tripValue.toFixed(2) }}</div>
                 <div class="ticket-view-details text-end">
-                  <button class="btn btn-light">View Details</button>
+                  <button class="btn btn-light" @click="handleViewDetailsClick">View Details</button>
                 </div>
             </div>
         </div>
@@ -26,8 +26,10 @@
 import TruckIcon from "../icons/TruckIcon.vue";
 import AZProgress from "../utility/AZProgress.vue";
 import TicketStatus from '../../constants/TicketStatus'
+
 export default {
     name: "TicketCard",
+    components: { TruckIcon, AZProgress },
     props: {
         startPlaceFormatted: {
             type: String,
@@ -52,14 +54,20 @@ export default {
           required: true
         }
     },
-    setup(props){
+    setup(props, context){
       // temporary
       const ticketStatus = props.status === TicketStatus.OPEN ? 0 : props.status === TicketStatus.IN_PROGRESS ? 50 : 100
+
+      const handleViewDetailsClick = () => {
+          context.emit("viewClick")
+      }
+
       return {
         ticketStatus,
+        handleViewDetailsClick
       }
     },
-    components: { TruckIcon, AZProgress },
+    emits: ["viewClick"]
 }
 </script>
 

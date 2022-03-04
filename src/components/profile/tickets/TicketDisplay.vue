@@ -1,0 +1,74 @@
+<template>
+    <div class="dialog-modal-address mb-3">
+        <div>{{ ticket.start_address }}</div>
+        <div class="my-3">to</div>
+        <div>{{ ticket.destination_address }}</div>
+    </div>
+    <div class="dialog-info-container">
+        <TicketInfoRow
+            titleFirst="Base Pay"
+            :itemFirst="'$' + ticket.base_pay"
+            titleSecond="Rate/mile"
+            :itemSecond="'$' + ticket.rate_per_mile"
+            titleThird="Total"
+            :itemThird="'$' + parseFloat(ticket.total).toFixed(2)"
+        />
+        <TicketInfoRow
+            titleFirst="Duration"
+            :itemFirst="ticket.est_duration"
+            titleSecond="Distance"
+            :itemSecond="ticket.distance"
+            titleThird="Status"
+            :itemThird="ticket.hasStatus"
+        />
+        <div class="text-center w-100 mt-4">{{ ticket.description }}</div>
+    </div>
+</template>
+
+<script>
+import TicketInfoRow from "./TicketInfoRow.vue";
+export default {
+    name: 'TicketDisplay',
+    props: {
+        ticket: {
+            type: Object,
+            required: true
+        }
+    },
+    components: { TicketInfoRow }
+}
+</script>
+
+<style scoped>
+.dialog-modal-address {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
+}
+
+.dialog-info-container {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    text-align: left;
+}
+
+.dialog-info-row {
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 100%;
+    width: 100%;
+}
+
+@media screen and (min-width: 500px) {
+    .dialog-info-container {
+        flex-direction: row;
+    }
+    .dialog-info-row {
+        flex: 0 0 50%;
+        width: 50%;
+    }
+}
+</style>

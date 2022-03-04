@@ -1,39 +1,58 @@
 <template>
     <template v-if="ticketsExist">
         <TicketCard 
-            v-for="ticket of tickets.slice(0, 5)" 
+            v-for="(ticket, i) of tickets.slice(0, 5)" 
             :key="ticket.ticketId"
             :tripDuration="ticket.est_duration" 
             :tripValue="ticket.total"
             :startPlaceFormatted="ticket.start_city_state"
             :endPlaceFormatted="ticket.end_city_state"
-            :status="ticket.hasStatus">
+            :status="ticket.hasStatus"
+            @viewClick="handleOpenModal(i)">
         </TicketCard>
         <div class="text-center">
             <button class="btn btn-primary"><router-link to="/profile/account/tickets" class="view-all">View All</router-link></button>
         </div>
     </template>
     <AZFeedbackAlert text="No tickets to display!" severity="primary" centered v-else />
+    <ViewTicketModal @closeModal="handleCloseModal" :ticket="modalData" v-if="showModal" />
 </template>
 
 <script>
-import { computed } from "vue"
+import { computed, ref } from "vue"
 import { useStore } from "vuex"
 import TicketCard from "../../ticket/TicketCard.vue"
 import AZFeedbackAlert from "../../utility/AZFeedbackAlert.vue"
+import ViewTicketModal from "./ViewTicketModal.vue"
 
 export default {
     name: 'RecentTicketCards',
-    components: { TicketCard, AZFeedbackAlert },
+    components: { TicketCard, AZFeedbackAlert, ViewTicketModal },
     props: {},
     setup(){
         const { state } = useStore()
         const tickets = computed(() => state.ticket.tickets)
         const ticketsExist = computed(() => state.ticket.tickets.length > 0)
+        const showModal = ref(false)
+        const modalData = ref(null)
+
+        const handleOpenModal = indx => {
+            console.log(tickets.value[indx])
+            modalData.value = tickets.value[indx]
+            showModal.value = true
+        }
+        const handleCloseModal = () => {
+            showModal.value = false
+            modalData.value = null
+        }
 
         return {
             tickets,
             ticketsExist,
+            modalData,
+            showModal,
+            handleOpenModal,
+            handleCloseModal
         }
     }
 }
