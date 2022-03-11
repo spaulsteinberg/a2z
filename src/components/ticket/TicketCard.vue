@@ -9,7 +9,7 @@
                 <div class="ticket-place dest-ticket-place">{{ endPlaceFormatted }}</div>
                 <div class="text-center duration-box mt-2 mb-2">{{ tripDuration }} </div>
                 <div class="col mb-3">
-                    <AZProgress variant="bg-success" :value="ticketStatus" striped />
+                    <AZProgress :variant="status === ticketCancelled ? 'bg-danger' : 'bg-success'" :value="ticketStatus" striped />
                 </div>
             </div>
             <div class="ticket-place-container-footer">
@@ -58,13 +58,14 @@ export default {
     setup(props, context){
       // temporary
       const ticketStatus = computed(() => props.status === TicketStatus.OPEN ? 0 : props.status === TicketStatus.IN_PROGRESS ? 50 : 100)
-
+      const ticketCancelled = TicketStatus.CANCELLED
       const handleViewDetailsClick = () => {
           context.emit("viewClick")
       }
 
       return {
         ticketStatus,
+        ticketCancelled,
         handleViewDetailsClick
       }
     },
