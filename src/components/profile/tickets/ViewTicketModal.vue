@@ -5,11 +5,32 @@
         v-model="show"
         :before-close="handleClose"
     >
+        <TicketAddressDisplay :start="ticket.start_address" :destination="ticket.destination_address" />
         <TicketDisplay :ticket="ticket" v-if="!editing" />
-        <template v-slot:footer>
+        <form @submit.prevent="handleSubmitForm" v-else>
+            <AZInputGroup type="number" v-model="basePay" id="basePay" labelText="Base Pay: " :handleBlur="v.basePay.$touch" :isInvalid="v.basePay.$error" />
+            <AZErrorBlock v-for="error of v.basePay?.$errors" :key="error.$uid" :error="'*' + error.$message" alignText="text-left" :isSmall="true"/>
+            <AZInputGroup type="number" v-model="ratePerMile" id="ratePerMile" labelText="Rate/Mile: " step="any" :handleBlur="v.ratePerMile.$touch" :isInvalid="v.ratePerMile.$error" />
+            <AZErrorBlock v-for="error of v.ratePerMile?.$errors" :key="error.$uid" :error="'*' + error.$message" alignText="text-left" :isSmall="true"/>
+            <AZTextarea v-model="description" id="description" labelText="Description: " :handleBlur="v.description.$touch" :isInvalid="v.description.$error" />
+            <AZErrorBlock v-for="error of v.description?.$errors" :key="error.$uid" :error="'*' + error.$message" alignText="text-left" :isSmall="true"/>
+            <AZSelectGroup v-model="hasStatus" :items="selectItems" id="hasStatusSelect" labelText="Status: " :isInvalid="v.hasStatus.$error" />
+            <AZErrorBlock v-for="error of v.hasStatus?.$errors" :key="error.$uid" :error="'*' + error.$message" alignText="text-left" :isSmall="true"/>
+            <p class="mt-2">New Total: ${{ total }}</p>
+        </form>
+        <template v-slot:footer >
             <div class="button-container">
-                <button class="btn btn-info mx-1">Edit</button>
-                <button class="btn btn-danger mx-1"> Delete</button>
+                <template v-if="!loading">
+                    <button class="btn btn-info mx-1" @click="handleChangeEdit" v-if="!editing">Edit</button>
+                    <template v-else>
+                        <button class="btn btn-primary mx-1" @click="handleSubmitForm" :disabled="v.$invalid">Save Changes</button>
+                        <button class="btn btn-secondary mx-1" @click="cancelForm">Cancel</button>
+                    </template>
+                </template>
+                <AZLoadingSpinner v-else/>
+            </div>
+            <div class="mt-4" v-if="error">
+                <AZFeedbackAlert :text="error" severity="danger" />
             </div>
         </template>
     </el-dialog>
@@ -17,16 +38,33 @@
 
 <script>
 import { ElDialog } from 'element-plus'
-import { computed, ref } from 'vue'
+import { computed, reactive, ref, toRefs } from 'vue'
 import useWindowWidth from '../../../composables/useWindowWidth'
 import TicketDisplay from './TicketDisplay.vue'
+import TicketAddressDisplay from './TicketAddressDisplay.vue'
+import AZInputGroup from '../../utility/AZInputGroup.vue'
+import { useVuelidate } from '@vuelidate/core'
+import { required, maxValue, minValue, minLength, maxLength } from '@vuelidate/validators'
+import AZSelectGroup from '../../utility/AZSelectGroup.vue'
+import TicketStatus from '../../../constants/TicketStatus'
+import AZTextarea from '../../utility/AZTextarea.vue'
+import AZErrorBlock from '../../utility/AZErrorBlock.vue'
+import { getAuth } from 'firebase/auth'
+import { useStore } from 'vuex'
+import AZLoadingSpinner from '../../utility/AZLoadingSpinner.vue'
+import AZFeedbackAlert from '../../utility/AZFeedbackAlert.vue'
+
 
 export default {
     name: 'ViewTicketModal',
-    components: { ElDialog, TicketDisplay },
+    components: { ElDialog, TicketDisplay, TicketAddressDisplay, AZInputGroup, AZSelectGroup, AZTextarea, AZErrorBlock, AZLoadingSpinner, AZFeedbackAlert },
     props: {
         ticket: {
             type: Object,
+            required: true
+        },
+        ticketIndex: {
+            type: Number,
             required: true
         }
     },
@@ -36,10 +74,66 @@ export default {
         const mobile = useWindowWidth(500).isWidth
         const desktop = useWindowWidth(1200).isWidth
         const editing = ref(false)
-        console.log("Opening...", props.ticket)
+        const auth = getAuth()
+        const store = useStore()
+        console.log("Opening...", props.ticketIndex)
         const handleClose = () => {
             console.log("Closing...")
             context.emit("closeModal")
+        }
+        const handleChangeEdit = () => editing.value = !editing.value
+
+        /********* form refs  ***************/
+        const editForm = reactive({
+            basePay: props.ticket.base_pay,
+            ratePerMile: props.ticket.rate_per_mile,
+            hasStatus: props.ticket.hasStatus,
+            description: props.ticket.description
+        })
+
+        const reqState = reactive({
+            loading: false,
+            error: null
+        })
+        
+        const selectItems = [TicketStatus.OPEN, TicketStatus.IN_PROGRESS, TicketStatus.COMPLETED, TicketStatus.CANCELLED]
+        const rules = computed(() => ({
+            basePay: { required, minValue: minValue(0), maxValue: maxValue(1000000) },
+            ratePerMile: { required, minValue: minValue(0.0), maxValue: maxValue(1000000) },
+            hasStatus: { required },
+            description: { required, minLength: minLength(15), maxLength: maxLength(300) }
+        }))
+        const total = computed(() => parseFloat(parseFloat(editForm.basePay) + (editForm.ratePerMile * props.ticket.distance)).toFixed(2))
+
+        const v = useVuelidate(rules, editForm)
+
+        const handleSubmitForm = async () => {
+            try {
+                const request = {
+                    ticketId: props.ticket.ticketId,
+                    basePay: parseFloat(editForm.basePay),
+                    ratePerMile: parseFloat(editForm.ratePerMile),
+                    hasStatus: editForm.hasStatus,
+                    description: editForm.description,
+                    total: parseFloat(total.value)
+                }
+                reqState.loading = true
+                reqState.error = null
+                await store.dispatch("ticket/patchTicket", { user: auth.currentUser, index: props.ticketIndex, request})
+                handleChangeEdit()
+                // TODO - set new states
+            } catch (err) {
+                console.log(err)
+                reqState.error = "err"
+            } finally { reqState.loading = false }
+        }
+        const cancelForm = () => {
+            console.log("cancelling...")
+            editForm.basePay = props.ticket.base_pay,
+            editForm.ratePerMile = props.ticket.rate_per_mile,
+            editForm.hasStatus = props.ticket.hasStatus,
+            editForm.description = props.ticket.description
+            handleChangeEdit()
         }
 
         return {
@@ -48,7 +142,15 @@ export default {
             mobile,
             desktop,
             editing,
-            handleClose
+            handleChangeEdit,
+            handleClose,
+            v,
+            ...toRefs(editForm),
+            ...toRefs(reqState),
+            total,
+            selectItems,
+            cancelForm,
+            handleSubmitForm
         }
     },
     emits: ["closeModal"]

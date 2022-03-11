@@ -26,6 +26,7 @@
 import TruckIcon from "../icons/TruckIcon.vue";
 import AZProgress from "../utility/AZProgress.vue";
 import TicketStatus from '../../constants/TicketStatus'
+import { computed } from "vue";
 
 export default {
     name: "TicketCard",
@@ -56,7 +57,7 @@ export default {
     },
     setup(props, context){
       // temporary
-      const ticketStatus = props.status === TicketStatus.OPEN ? 0 : props.status === TicketStatus.IN_PROGRESS ? 50 : 100
+      const ticketStatus = computed(() => props.status === TicketStatus.OPEN ? 0 : props.status === TicketStatus.IN_PROGRESS ? 50 : 100)
 
       const handleViewDetailsClick = () => {
           context.emit("viewClick")

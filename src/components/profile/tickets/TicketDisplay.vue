@@ -1,9 +1,4 @@
 <template>
-    <div class="dialog-modal-address mb-3">
-        <div>{{ ticket.start_address }}</div>
-        <div class="my-3">to</div>
-        <div>{{ ticket.destination_address }}</div>
-    </div>
     <div class="dialog-info-container">
         <TicketInfoRow
             titleFirst="Base Pay"
@@ -17,7 +12,7 @@
             titleFirst="Duration"
             :itemFirst="ticket.est_duration"
             titleSecond="Distance"
-            :itemSecond="ticket.distance"
+            :itemSecond="ticket.distance_formatted"
             titleThird="Status"
             :itemThird="ticket.hasStatus"
         />
@@ -40,14 +35,6 @@ export default {
 </script>
 
 <style scoped>
-.dialog-modal-address {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    justify-content: center;
-    text-align: center;
-}
-
 .dialog-info-container {
     display: flex;
     flex-direction: column;

@@ -7,7 +7,7 @@ const initialState = () => {
         isLoading: false,
         error: '',
         filterValue: '',
-        tickets: []
+        tickets: [],
     }
 }
 
@@ -28,7 +28,15 @@ const ticketModule = {
         setError: (state, payload) => state.error = payload,
         setTickets: (state, payload) => state.tickets = payload,
         addTicket: (state, payload) => { state.tickets.push(payload) },
-        setFilterValue: (state, payload) => state.filterValue = payload
+        setFilterValue: (state, payload) => state.filterValue = payload,
+        setPatchedTicket: (state, payload) => {
+            console.log("IN PATCH", payload)
+            state.tickets[payload.index].base_pay = payload.basePay
+            state.tickets[payload.index].rate_per_mile = payload.ratePerMile
+            state.tickets[payload.index].hasStatus = payload.hasStatus
+            state.tickets[payload.index].description = payload.description
+            state.tickets[payload.index].total = payload.total
+        }
     },
     actions: {
         async getTickets({ commit }, payload) {
@@ -49,9 +57,20 @@ const ticketModule = {
         async postTicket({ commit }, payload) {
             try {
                 const token = await getFirebaseIdToken(payload.user)
-                const response = await axios.post(process.env.VUE_APP_TICKET_PATH, payload.request ,{ headers: { token: token } })
+                const response = await axios.post(process.env.VUE_APP_TICKET_PATH, payload.request , { headers: { token: token } })
                 console.log(response)
                 commit('addTicket', response.data.ticket)
+            } catch (err) {
+                console.log(err)
+                throw new Error(err.message)
+            }
+        },
+        async patchTicket({ commit }, payload) {
+            try {
+                console.log(payload)
+                const token = await getFirebaseIdToken(payload.user)
+                const response = await axios.patch(process.env.VUE_APP_TICKET_PATH, payload.request , { headers: { token: token } })
+                commit('setPatchedTicket', { index: payload.index, ...payload.request})
             } catch (err) {
                 console.log(err)
                 throw new Error(err.message)

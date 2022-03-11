@@ -15,7 +15,7 @@
         </div>
     </template>
     <AZFeedbackAlert text="No tickets to display!" severity="primary" centered v-else />
-    <ViewTicketModal @closeModal="handleCloseModal" :ticket="modalData" v-if="showModal" />
+    <ViewTicketModal @closeModal="handleCloseModal" :ticket="modalData" :ticketIndex="ticketIndex" v-if="showModal" />
 </template>
 
 <script>
@@ -35,21 +35,25 @@ export default {
         const ticketsExist = computed(() => state.ticket.tickets.length > 0)
         const showModal = ref(false)
         const modalData = ref(null)
+        const ticketIndex = ref(null)
 
         const handleOpenModal = indx => {
             console.log(tickets.value[indx])
             modalData.value = tickets.value[indx]
+            ticketIndex.value = indx
             showModal.value = true
         }
         const handleCloseModal = () => {
             showModal.value = false
             modalData.value = null
+            ticketIndex.value = null
         }
 
         return {
             tickets,
             ticketsExist,
             modalData,
+            ticketIndex,
             showModal,
             handleOpenModal,
             handleCloseModal
