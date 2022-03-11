@@ -1,22 +1,56 @@
 <template>
     <div class="ticket-container">
-        <div class="search-row-container mb-3">
-            <div class="search">
-                <TicketSearch />
-            </div>
+        <template v-if="!error">
+            <template v-if="!loading">
+                <div class="search-row-container mb-3">
+                    <div class="search">
+                        <TicketSearch />
+                    </div>
+                </div>
+                <TicketTable />
+            </template>
+            <AZFeedbackAlert :text="loadingText" centered includeSpinner v-else />
+        </template>
+        <div :class="[isSmallScreen ? 'w-50' : 'w-100', 'mx-auto']" v-else>
+            <AZFeedbackAlert :text="errorText" severity="danger" />
         </div>
-        <TicketTable />
     </div>
 </template>
 
 <script>
 import TicketTable from "../../components/tickets/TicketTable.vue";
 import TicketSearch from "../../components/tickets/TicketSearch.vue";
+import { computed, onMounted } from "vue";
+import { useStore } from "vuex";
+import { getAuth } from "firebase/auth";
+import AZFeedbackAlert from "../../components/utility/AZFeedbackAlert.vue";
+import useWindowWidth from "../../composables/useWindowWidth";
+
 export default {
     name: "TicketView",
     setup() {
+        const store = useStore()
+        const auth = getAuth()
+        const loading = computed(() => store.state.ticket.isLoading)
+        const error = computed(() => store.state.ticket.error)
+        const loadingText = "Fetching tickets..."
+        const errorText = "An error occurred loading your tickets. Please reload and try again."
+        const isSmallScreen = useWindowWidth(500).isWidth
+        onMounted(() => {
+            if (!store.getters["ticket/getHasData"]) {
+                store.dispatch("ticket/getTickets", { user: auth.currentUser })
+            }
+        })
+
+        return {
+            loading,
+            error,
+            loadingText,
+            errorText,
+            isSmallScreen
+        }
     },
-    components: { TicketTable, TicketSearch }
+    components: { TicketTable, TicketSearch, AZFeedbackAlert }
 }
 </script>
 
