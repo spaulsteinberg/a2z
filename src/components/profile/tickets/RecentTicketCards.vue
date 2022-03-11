@@ -21,7 +21,7 @@
 <script>
 import { computed, ref } from "vue"
 import { useStore } from "vuex"
-import TicketCard from "../../ticket/TicketCard.vue"
+import TicketCard from "../../tickets/TicketCard.vue"
 import AZFeedbackAlert from "../../utility/AZFeedbackAlert.vue"
 import ViewTicketModal from "./ViewTicketModal.vue"
 

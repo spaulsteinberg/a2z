@@ -56,7 +56,6 @@ export default {
         }
     },
     setup(props, context){
-      // temporary
       const ticketStatus = computed(() => props.status === TicketStatus.OPEN ? 0 : props.status === TicketStatus.IN_PROGRESS ? 50 : 100)
       const ticketCancelled = TicketStatus.CANCELLED
       const handleViewDetailsClick = () => {
