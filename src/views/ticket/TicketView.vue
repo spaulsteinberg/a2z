@@ -9,6 +9,9 @@
                     <div class="status-search my-2">
                         <TicketStatusDropdown />
                     </div>
+                    <div class="origin-search">
+                        <TicketOriginSearch isOrigin/>
+                    </div>
                 </div>
                 <TicketTable />
             </template>
@@ -29,6 +32,7 @@ import { useStore } from "vuex";
 import { getAuth } from "firebase/auth";
 import AZFeedbackAlert from "../../components/utility/AZFeedbackAlert.vue";
 import useWindowWidth from "../../composables/useWindowWidth";
+import TicketOriginSearch from "../../components/tickets/TicketOriginSearch.vue";
 
 export default {
     name: "TicketView",
@@ -54,7 +58,7 @@ export default {
             isSmallScreen
         }
     },
-    components: { TicketTable, TicketSearch, AZFeedbackAlert, TicketStatusDropdown }
+    components: { TicketTable, TicketSearch, AZFeedbackAlert, TicketStatusDropdown, TicketOriginSearch }
 }
 </script>
 
@@ -79,7 +83,7 @@ export default {
     width: 100%;
     justify-content: flex-start;
 }
-.search, .status-search {
+.search, .status-search, .origin-search {
     flex: 0 0 100%;
     max-width: 300px;
 }
@@ -88,7 +92,7 @@ export default {
 }
 
 @media screen and (min-width: 500px) {
-    .search, .status-search {
+    .search, .status-search, .origin-search {
         width: 40%;
     }
 }
@@ -101,11 +105,12 @@ export default {
         width: 90%;
         overflow: hidden;
     }
-    .search, .status-search {
+    .search, .status-search, .origin-search {
         width: 30%;
     }
     .status-search {
         margin-left: 1rem;
+        margin-right: 1rem;
     }
 }
 @media screen and (min-width: 1200px) {
