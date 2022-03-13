@@ -10,7 +10,10 @@
                         <TicketStatusDropdown />
                     </div>
                     <div class="origin-search">
-                        <TicketOriginSearch isOrigin/>
+                        <TicketPlaceSearch isOrigin/>
+                    </div>
+                    <div class="origin-search status-search">
+                        <TicketPlaceSearch :isOrigin="false"/>
                     </div>
                 </div>
                 <TicketTable />
@@ -32,7 +35,7 @@ import { useStore } from "vuex";
 import { getAuth } from "firebase/auth";
 import AZFeedbackAlert from "../../components/utility/AZFeedbackAlert.vue";
 import useWindowWidth from "../../composables/useWindowWidth";
-import TicketOriginSearch from "../../components/tickets/TicketOriginSearch.vue";
+import TicketPlaceSearch from "../../components/tickets/TicketPlaceSearch.vue";
 
 export default {
     name: "TicketView",
@@ -58,7 +61,7 @@ export default {
             isSmallScreen
         }
     },
-    components: { TicketTable, TicketSearch, AZFeedbackAlert, TicketStatusDropdown, TicketOriginSearch }
+    components: { TicketTable, TicketSearch, AZFeedbackAlert, TicketStatusDropdown, TicketPlaceSearch }
 }
 </script>
 
@@ -113,6 +116,7 @@ export default {
         margin-right: 1rem;
     }
 }
+@media screen and (min-width: 1072px) { .origin-search { margin: 0 !important}}
 @media screen and (min-width: 1200px) {
     .ticket-container {
         flex: 0 0 75%;

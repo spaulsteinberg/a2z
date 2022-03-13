@@ -9,6 +9,7 @@ const initialState = () => {
         filterValue: '',
         statusValue: '',
         originFilterValue: '',
+        destinationFilterValue: '',
         tickets: [],
     }
 }
@@ -20,7 +21,7 @@ const ticketModule = {
         getHasData: state => state.hasData,
         getFilterValue: state => state.filterValue,
         getFilteredTickets: state => { 
-            if (!state.filterValue && !state.statusValue && !state.originFilterValue) return state.tickets
+            if (!state.filterValue && !state.statusValue && !state.originFilterValue && !state. destinationFilterValue) return state.tickets
             let tix = state.tickets
             if (state.filterValue) {
                 tix = tix.filter(ticket => {
@@ -30,6 +31,9 @@ const ticketModule = {
             }
             if (state.originFilterValue) {
                 tix = tix.filter(ticket => ticket.start_city_state.toLowerCase().includes(state.originFilterValue.toLowerCase()))
+            }
+            if (state.destinationFilterValue) {
+                tix = tix.filter(ticket => ticket.end_city_state.toLowerCase().includes(state.destinationFilterValue.toLowerCase()))
             }
             if (state.statusValue) {
                 tix = tix.filter(ticket => ticket.hasStatus.toUpperCase() === state.statusValue.toUpperCase())
@@ -46,6 +50,7 @@ const ticketModule = {
         setFilterValue: (state, payload) => state.filterValue = payload,
         setStatusValue: (state, payload) => state.statusValue = payload,
         setOriginFilterValue: (state, payload) => state.originFilterValue = payload,
+        setDestinationFilterValue: (state, payload) => state.destinationFilterValue = payload,
         setPatchedTicket: (state, payload) => {
             console.log("IN PATCH", payload)
             state.tickets[payload.index].base_pay = payload.basePay
