@@ -7,6 +7,7 @@ const initialState = () => {
         isLoading: false,
         error: '',
         filterValue: '',
+        statusValue: '',
         tickets: [],
     }
 }
@@ -18,8 +19,18 @@ const ticketModule = {
         getHasData: state => state.hasData,
         getFilterValue: state => state.filterValue,
         getFilteredTickets: state => { 
-            if (!state.filterValue) return state.tickets
-            return state.tickets.filter(ticket => ticket.ticketId.includes(state.filterValue))
+            if (!state.filterValue && !state.statusValue) return state.tickets
+            let tix = state.tickets
+            if (state.filterValue) {
+                tix = tix.filter(ticket => {
+                    const tick = ticket.ticketId.toLowerCase()
+                    return tick.includes(state.filterValue.toLowerCase())
+                })
+            }
+            if (state.statusValue) {
+                tix = tix.filter(ticket => ticket.hasStatus.toUpperCase() === state.statusValue.toUpperCase())
+            }
+            return tix
         }
     },
     mutations: {
@@ -29,6 +40,7 @@ const ticketModule = {
         setTickets: (state, payload) => state.tickets = payload,
         addTicket: (state, payload) => { state.tickets.push(payload) },
         setFilterValue: (state, payload) => state.filterValue = payload,
+        setStatusValue: (state, payload) => state.statusValue = payload,
         setPatchedTicket: (state, payload) => {
             console.log("IN PATCH", payload)
             state.tickets[payload.index].base_pay = payload.basePay

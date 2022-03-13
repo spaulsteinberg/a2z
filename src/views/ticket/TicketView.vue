@@ -6,6 +6,9 @@
                     <div class="search">
                         <TicketSearch />
                     </div>
+                    <div class="status-search my-2">
+                        <TicketStatusDropdown />
+                    </div>
                 </div>
                 <TicketTable />
             </template>
@@ -20,6 +23,7 @@
 <script>
 import TicketTable from "../../components/tickets/TicketTable.vue";
 import TicketSearch from "../../components/tickets/TicketSearch.vue";
+import TicketStatusDropdown from "../../components/tickets/TicketStatusDropdown.vue"
 import { computed, onMounted } from "vue";
 import { useStore } from "vuex";
 import { getAuth } from "firebase/auth";
@@ -50,7 +54,7 @@ export default {
             isSmallScreen
         }
     },
-    components: { TicketTable, TicketSearch, AZFeedbackAlert }
+    components: { TicketTable, TicketSearch, AZFeedbackAlert, TicketStatusDropdown }
 }
 </script>
 
@@ -73,28 +77,42 @@ export default {
     flex-direction: column;
     flex-wrap: wrap;
     width: 100%;
+    justify-content: flex-start;
 }
-.search {
+.search, .status-search {
     flex: 0 0 100%;
     max-width: 300px;
 }
+.status-search {
+    margin-left: 0rem;
+}
 
 @media screen and (min-width: 500px) {
-    .search-row-container {
-        flex-direction: row;
-    }
-    .search {
+    .search, .status-search {
         width: 40%;
     }
 }
 @media screen and (min-width: 768px) {
+    .search-row-container {
+        flex-direction: row;
+    }
+    .ticket-container {
+        flex: 0 0 90%;
+        width: 90%;
+        overflow: hidden;
+    }
+    .search, .status-search {
+        width: 30%;
+    }
+    .status-search {
+        margin-left: 1rem;
+    }
+}
+@media screen and (min-width: 1200px) {
     .ticket-container {
         flex: 0 0 75%;
         width: 75%;
         overflow: hidden;
-    }
-    .search {
-        width: 30%;
     }
 }
 </style>
