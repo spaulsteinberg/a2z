@@ -9,12 +9,12 @@
             <template v-slot="scope">
                 <!-- {{ scope.row }} -->
                 <div class="table-ops-container">
-                    <button class="btn btn-primary mx-1 mt-1">
-                    <ActionIcon />
-                </button>
-                <button class="btn btn-danger mx-1 mt-1" v-if="scope.row.hasStatus === openTicketType">
-                    <ActionIcon variant="trash" />
-                </button>
+                    <button class="btn btn-primary mx-1 mt-1" @click="handleOpenModal(scope.row)">
+                        <ActionIcon />
+                    </button>
+                    <button class="btn btn-danger mx-1 mt-1" v-if="scope.row.hasStatus === openTicketType">
+                        <ActionIcon variant="trash" />
+                    </button>
                 </div>
             </template>
         </el-table-column>
@@ -26,6 +26,8 @@
         :page-size="pageSize"
         @current-change="setPage"
     ></el-pagination>
+    <ViewTicketModal @closeModal="handleCloseModal" :ticket="modalData" v-if="showModal" />
+
 </template>
 
 <script>
@@ -34,26 +36,42 @@ import { useStore } from "vuex"
 import { ElTable, ElTableColumn, ElPagination } from 'element-plus'
 import ActionIcon from "../icons/ActionIcon.vue"
 import TicketStatus from "../../constants/TicketStatus"
+import ViewTicketModal from "../profile/tickets/ViewTicketModal.vue"
 
 export default {
     name: 'TicketTable',
-    components: { ElTable, ElTableColumn, ElPagination, ActionIcon },
+    components: { ElTable, ElTableColumn, ElPagination, ActionIcon, ViewTicketModal },
     setup() {
         const store = useStore()
         const page = ref(1)
+        const showModal = ref(false)
+        const modalData = ref(null)
         const pageSize = 10
         const openTicketType = TicketStatus.OPEN
         const tickets = computed(() => store.getters["ticket/getFilteredTickets"].slice(pageSize * page.value - pageSize, pageSize * page.value))
         const numberOfTickets = computed(() => store.getters["ticket/getFilteredTickets"].length)
 
         const setPage = p => page.value = p
+        const handleOpenModal = data => {
+            console.log(data)
+            modalData.value = data
+            showModal.value = true
+        }
+        const handleCloseModal = () => {
+            showModal.value = false
+            modalData.value = null
+        }
 
         return {
             tickets,
             numberOfTickets,
             pageSize,
             openTicketType,
-            setPage
+            setPage,
+            handleOpenModal,
+            handleCloseModal,
+            showModal,
+            modalData
         }
     }
 }

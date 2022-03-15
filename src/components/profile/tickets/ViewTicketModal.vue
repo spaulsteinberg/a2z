@@ -65,7 +65,7 @@ export default {
         },
         ticketIndex: {
             type: Number,
-            required: true
+            required: false
         }
     },
     setup(props, context) {
@@ -76,7 +76,6 @@ export default {
         const editing = ref(false)
         const auth = getAuth()
         const store = useStore()
-        console.log("Opening...", props.ticketIndex)
         const handleClose = () => {
             console.log("Closing...")
             context.emit("closeModal")
@@ -119,12 +118,12 @@ export default {
                 }
                 reqState.loading = true
                 reqState.error = null
-                await store.dispatch("ticket/patchTicket", { user: auth.currentUser, index: props.ticketIndex, request})
+                await store.dispatch("ticket/patchTicket", { user: auth.currentUser, index: props.ticketIndex ? props.ticketIndex : -1, request})
                 handleChangeEdit()
                 // TODO - set new states
             } catch (err) {
                 console.log(err)
-                reqState.error = "err"
+                reqState.error = "Error editing ticket"
             } finally { reqState.loading = false }
         }
         const cancelForm = () => {

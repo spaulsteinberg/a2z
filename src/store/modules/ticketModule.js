@@ -51,13 +51,21 @@ const ticketModule = {
         setStatusValue: (state, payload) => state.statusValue = payload,
         setOriginFilterValue: (state, payload) => state.originFilterValue = payload,
         setDestinationFilterValue: (state, payload) => state.destinationFilterValue = payload,
-        setPatchedTicket: (state, payload) => {
+        setPatchedTicketByIndex: (state, payload) => {
             console.log("IN PATCH", payload)
             state.tickets[payload.index].base_pay = payload.basePay
             state.tickets[payload.index].rate_per_mile = payload.ratePerMile
             state.tickets[payload.index].hasStatus = payload.hasStatus
             state.tickets[payload.index].description = payload.description
             state.tickets[payload.index].total = payload.total
+        },
+        setPatchedTicketByID: (state, payload) => {
+            let index = state.tickets.findIndex(ticket => ticket.ticketId === payload.ticketId)
+            state.tickets[index].base_pay = payload.basePay
+            state.tickets[index].rate_per_mile = payload.ratePerMile
+            state.tickets[index].hasStatus = payload.hasStatus
+            state.tickets[index].description = payload.description
+            state.tickets[index].total = payload.total
         }
     },
     actions: {
@@ -92,7 +100,12 @@ const ticketModule = {
                 console.log(payload)
                 const token = await getFirebaseIdToken(payload.user)
                 const response = await axios.patch(process.env.VUE_APP_TICKET_PATH, payload.request , { headers: { token: token } })
-                commit('setPatchedTicket', { index: payload.index, ...payload.request})
+                if (payload.index >= 0) {
+                    commit('setPatchedTicketByIndex', { index: payload.index, ...payload.request})
+                } else {
+                    commit('setPatchedTicketByID', payload.request)
+                }
+                
             } catch (err) {
                 console.log(err)
                 throw new Error(err.message)
