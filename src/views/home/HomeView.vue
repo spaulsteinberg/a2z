@@ -110,8 +110,8 @@ export default {
         const request = {
           start_address: start.value,
           destination_address: end.value,
-          start_city_state: `${tempStartCityState[1]},${tempStartCityState[2].substring(0, 3)}`,
-          end_city_state: `${tempEndCityState[1]},${tempEndCityState[2].substring(0, 3)}`,
+          start_city_state: `${tempStartCityState[1]},${tempStartCityState[2].substring(0, 3)}`.trim(),
+          end_city_state: `${tempEndCityState[1]},${tempEndCityState[2].substring(0, 3)}`.trim(),
           distance: distanceValue.value,
           distanceFormatted: distance.value,
           est_duration: duration.value,
