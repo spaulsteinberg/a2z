@@ -1,10 +1,10 @@
 <template>
     <el-table :data="tickets" border style="width: 100%">
         <el-table-column prop="ticketId" label="Ticket ID" width="200" />
-        <el-table-column prop="start_city_state" label="Origin" />
-        <el-table-column prop="end_city_state" label="Destination" />
-        <el-table-column prop="created_at" label="Created" />
-        <el-table-column prop="hasStatus" label="Status" />
+        <el-table-column prop="start_city_state" label="Origin" sortable/>
+        <el-table-column prop="end_city_state" label="Destination" sortable/>
+        <el-table-column prop="created_at" label="Created" sortable/>
+        <el-table-column prop="hasStatus" label="Status" sortable/>
         <el-table-column label="View Ticket" />
     </el-table>
     <el-pagination background layout="prev, pager, next" :total="numberOfTickets" :page-size="pageSize" @current-change="setPage">
