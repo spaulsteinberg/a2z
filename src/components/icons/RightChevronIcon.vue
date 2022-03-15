@@ -15,7 +15,6 @@
 </template>
 
 <script>
-import { computed } from "vue"
 import useIcon from "../../composables/useIcon"
 export default {
     name: 'RightChevronIcon',
