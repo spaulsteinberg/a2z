@@ -20,17 +20,24 @@
         </form>
         <template v-slot:footer >
             <div class="button-container">
-                <template v-if="!loading">
-                    <button class="btn btn-info mx-1" @click="handleChangeEdit" v-if="!editing && !viewOnly">Edit</button>
-                    <template v-else-if="editing && !viewOnly">
+                <template v-if="!loading && !viewOnly">
+                    <button class="btn btn-info mx-1" @click="handleChangeEdit" v-if="!editing">Edit</button>
+                    <template v-else>
                         <button class="btn btn-primary mx-1" @click="handleSubmitForm" :disabled="v.$invalid">Save Changes</button>
                         <button class="btn btn-secondary mx-1" @click="cancelForm">Cancel</button>
                     </template>
                 </template>
-                <AZLoadingSpinner v-else/>
+                <template v-if="ticket.hasStatus === cancelledStatus">
+                    <button class="btn btn-primary" @click="handleReOpenTicket" v-if="!rOpenLoading">Re-Open Ticket</button>
+                    <AZLoadingSpinner v-else />
+                </template>
+                <AZLoadingSpinner v-if="loading"/>
             </div>
             <div class="mt-4" v-if="error">
                 <AZFeedbackAlert :text="error" severity="danger" />
+            </div>
+            <div class="mt-4" v-if="rOpenError">
+                <AZFeedbackAlert :text="rOpenError" severity="danger" />
             </div>
         </template>
     </el-dialog>
@@ -53,7 +60,6 @@ import { getAuth } from 'firebase/auth'
 import { useStore } from 'vuex'
 import AZLoadingSpinner from '../../utility/AZLoadingSpinner.vue'
 import AZFeedbackAlert from '../../utility/AZFeedbackAlert.vue'
-
 
 export default {
     name: 'ViewTicketModal',
@@ -99,6 +105,11 @@ export default {
             loading: false,
             error: null
         })
+
+        const reOpenReqState = reactive({
+            rOpenLoading: false,
+            rOpenError: null
+        })
         
         const selectItems = [TicketStatus.OPEN, TicketStatus.IN_PROGRESS, TicketStatus.COMPLETED, TicketStatus.CANCELLED]
         const rules = computed(() => ({
@@ -125,19 +136,34 @@ export default {
                 reqState.error = null
                 await store.dispatch("ticket/patchTicket", { user: auth.currentUser, index: props.ticketIndex ? props.ticketIndex : -1, request})
                 handleChangeEdit()
-                // TODO - set new states
             } catch (err) {
                 console.log(err)
-                reqState.error = "Error editing ticket"
+                reqState.error = "Could not edit ticket."
             } finally { reqState.loading = false }
         }
+
         const cancelForm = () => {
             console.log("cancelling...")
-            editForm.basePay = props.ticket.base_pay,
-            editForm.ratePerMile = props.ticket.rate_per_mile,
-            editForm.hasStatus = props.ticket.hasStatus,
+            editForm.basePay = props.ticket.base_pay
+            editForm.ratePerMile = props.ticket.rate_per_mile
+            editForm.hasStatus = props.ticket.hasStatus
             editForm.description = props.ticket.description
+            reqState.loading = false
+            reqState.error = null
+            reOpenReqState.rOpenLoading = false
+            reOpenReqState.rOpenError = null
             handleChangeEdit()
+        }
+
+        const handleReOpenTicket = async () => {
+            try {
+                reOpenReqState.rOpenLoading = true
+                reOpenReqState.rOpenError = null
+                await store.dispatch("ticket/changeTicketStatus", { user: auth.currentUser, ticketId: props.ticket.ticketId, newStatus: TicketStatus.OPEN})
+            } catch (err) {
+                console.log(err.message)
+                reOpenReqState.rOpenError = "Could not update status."
+            } finally { reOpenReqState.rOpenLoading = false }
         }
 
         return {
@@ -151,10 +177,13 @@ export default {
             v,
             ...toRefs(editForm),
             ...toRefs(reqState),
+            ...toRefs(reOpenReqState),
             total,
             selectItems,
             cancelForm,
-            handleSubmitForm
+            handleSubmitForm,
+            handleReOpenTicket,
+            cancelledStatus: TicketStatus.CANCELLED
         }
     },
     emits: ["closeModal"]

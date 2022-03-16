@@ -66,6 +66,10 @@ const ticketModule = {
             state.tickets[index].hasStatus = payload.hasStatus
             state.tickets[index].description = payload.description
             state.tickets[index].total = payload.total
+        },
+        setStatusChange: (state, payload) => {
+            let index = state.tickets.findIndex(ticket => ticket.ticketId === payload.ticketId)
+            state.tickets[index].hasStatus = payload.newStatus
         }
     },
     actions: {
@@ -99,7 +103,7 @@ const ticketModule = {
             try {
                 console.log(payload)
                 const token = await getFirebaseIdToken(payload.user)
-                const response = await axios.patch(process.env.VUE_APP_TICKET_PATH, payload.request , { headers: { token: token } })
+                await axios.patch(process.env.VUE_APP_TICKET_PATH, payload.request , { headers: { token: token } })
                 if (payload.index >= 0) {
                     commit('setPatchedTicketByIndex', { index: payload.index, ...payload.request})
                 } else {
@@ -108,6 +112,15 @@ const ticketModule = {
                 
             } catch (err) {
                 console.log(err)
+                throw new Error(err.message)
+            }
+        },
+        async changeTicketStatus({ commit }, payload) {
+            try {
+                const token = await getFirebaseIdToken(payload.user)
+                await axios.patch(`${process.env.VUE_APP_TICKET_PATH}/status/change?ticketId=${payload.ticketId}&newStatus=${payload.newStatus}`, {}, { headers: { token }})
+                commit('setStatusChange', { ticketId: payload.ticketId, newStatus: payload.newStatus})
+            } catch (err) {
                 throw new Error(err.message)
             }
         }
