@@ -15,12 +15,13 @@
         </div>
     </template>
     <AZFeedbackAlert text="No tickets to display!" severity="primary" centered v-else />
-    <ViewTicketModal @closeModal="handleCloseModal" :ticket="modalData" :ticketIndex="ticketIndex" v-if="showModal" />
+    <ViewTicketModal @closeModal="handleCloseModal" :ticket="modalData" :ticketIndex="ticketIndex" :viewOnly="modalData.hasStatus !== openTicketStatus" v-if="showModal" />
 </template>
 
 <script>
 import { computed, ref } from "vue"
 import { useStore } from "vuex"
+import TicketStatus from "../../../constants/TicketStatus"
 import TicketCard from "../../tickets/TicketCard.vue"
 import AZFeedbackAlert from "../../utility/AZFeedbackAlert.vue"
 import ViewTicketModal from "./ViewTicketModal.vue"
@@ -56,7 +57,8 @@ export default {
             ticketIndex,
             showModal,
             handleOpenModal,
-            handleCloseModal
+            handleCloseModal,
+            openTicketStatus: TicketStatus.OPEN
         }
     }
 }

@@ -40,6 +40,7 @@ export default {
     flex-direction: column;
     flex-wrap: wrap;
     text-align: left;
+    padding: 0;
 }
 
 .dialog-info-row {
@@ -52,10 +53,17 @@ export default {
 @media screen and (min-width: 500px) {
     .dialog-info-container {
         flex-direction: row;
+        padding: 0 1rem;
     }
     .dialog-info-row {
         flex: 0 0 50%;
         width: 50%;
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .dialog-info-container {
+        padding: 0 1.5rem;
     }
 }
 </style>

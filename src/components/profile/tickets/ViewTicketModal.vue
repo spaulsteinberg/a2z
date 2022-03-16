@@ -1,7 +1,7 @@
 <template>
     <el-dialog
         :title="title"
-        :width="mobile && !desktop ? '50%' : desktop ? '30%' : '95%'"
+        :width="mobile && !desktop ? '55%' : desktop ? '30%' : '95%'"
         v-model="show"
         :before-close="handleClose"
     >
@@ -21,8 +21,8 @@
         <template v-slot:footer >
             <div class="button-container">
                 <template v-if="!loading">
-                    <button class="btn btn-info mx-1" @click="handleChangeEdit" v-if="!editing">Edit</button>
-                    <template v-else>
+                    <button class="btn btn-info mx-1" @click="handleChangeEdit" v-if="!editing && !viewOnly">Edit</button>
+                    <template v-else-if="editing && !viewOnly">
                         <button class="btn btn-primary mx-1" @click="handleSubmitForm" :disabled="v.$invalid">Save Changes</button>
                         <button class="btn btn-secondary mx-1" @click="cancelForm">Cancel</button>
                     </template>
@@ -66,6 +66,11 @@ export default {
         ticketIndex: {
             type: Number,
             required: false
+        },
+        viewOnly: {
+            type: Boolean,
+            required: false,
+            default: false
         }
     },
     setup(props, context) {

@@ -26,7 +26,7 @@
         :page-size="pageSize"
         @current-change="setPage"
     ></el-pagination>
-    <ViewTicketModal @closeModal="handleCloseModal" :ticket="modalData" v-if="showModal" />
+    <ViewTicketModal @closeModal="handleCloseModal" :ticket="modalData" :viewOnly="modalData.hasStatus !== openTicketType" v-if="showModal" />
 
 </template>
 
