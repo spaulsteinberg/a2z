@@ -36,6 +36,7 @@
             const handleLogout = async () => {
                 await store.dispatch('auth/logout')
                 store.commit("account/reset")
+                store.commit("ticket/reset")
                 router.push('/login')
             }
 

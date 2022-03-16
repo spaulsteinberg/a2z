@@ -70,6 +70,12 @@ const ticketModule = {
         setStatusChange: (state, payload) => {
             let index = state.tickets.findIndex(ticket => ticket.ticketId === payload.ticketId)
             state.tickets[index].hasStatus = payload.newStatus
+        },
+        reset: state => {
+            const s = initialState();
+            Object.keys(s).forEach(key => {
+                state[key] = s[key]
+            })
         }
     },
     actions: {

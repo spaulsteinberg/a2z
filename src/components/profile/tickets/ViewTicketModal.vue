@@ -28,7 +28,11 @@
                     </template>
                 </template>
                 <template v-if="ticket.hasStatus === cancelledStatus">
-                    <button class="btn btn-primary" @click="handleReOpenTicket" v-if="!rOpenLoading">Re-Open Ticket</button>
+                    <button class="btn btn-primary" @click="handleChangeTicketStatus(openTicketStatus)" v-if="!rOpenLoading">Re-Open Ticket</button>
+                    <AZLoadingSpinner v-else />
+                </template>
+                <template v-if="ticket.hasStatus === inProgressStatus">
+                    <button class="btn btn-success" @click="handleChangeTicketStatus(completedTicketStatus)" v-if="!rOpenLoading">Mark as Complete</button>
                     <AZLoadingSpinner v-else />
                 </template>
                 <AZLoadingSpinner v-if="loading"/>
@@ -91,6 +95,7 @@ export default {
             console.log("Closing...")
             context.emit("closeModal")
         }
+        console.log("props...", props)
         const handleChangeEdit = () => editing.value = !editing.value
 
         /********* form refs  ***************/
@@ -155,11 +160,11 @@ export default {
             handleChangeEdit()
         }
 
-        const handleReOpenTicket = async () => {
+        const handleChangeTicketStatus = async (status) => {
             try {
                 reOpenReqState.rOpenLoading = true
                 reOpenReqState.rOpenError = null
-                await store.dispatch("ticket/changeTicketStatus", { user: auth.currentUser, ticketId: props.ticket.ticketId, newStatus: TicketStatus.OPEN})
+                await store.dispatch("ticket/changeTicketStatus", { user: auth.currentUser, ticketId: props.ticket.ticketId, newStatus: status})
             } catch (err) {
                 console.log(err.message)
                 reOpenReqState.rOpenError = "Could not update status."
@@ -182,8 +187,11 @@ export default {
             selectItems,
             cancelForm,
             handleSubmitForm,
-            handleReOpenTicket,
-            cancelledStatus: TicketStatus.CANCELLED
+            handleChangeTicketStatus,
+            completedTicketStatus: TicketStatus.COMPLETED,
+            openTicketStatus: TicketStatus.OPEN,
+            cancelledStatus: TicketStatus.CANCELLED,
+            inProgressStatus: TicketStatus.IN_PROGRESS
         }
     },
     emits: ["closeModal"]
