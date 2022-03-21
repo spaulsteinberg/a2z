@@ -10,6 +10,7 @@ import AZLoadingSpinner from "./AZLoadingSpinner.vue"
 import AZProgress from "./AZProgress.vue"
 import AZSelectGroup from "./AZSelectGroup.vue"
 import AZTextarea from "./AZTextarea.vue"
+import AZCCModal from "./AZCCModal.vue"
 
 export  { 
     AZAccordion, 
@@ -23,5 +24,6 @@ export  {
     AZLoadingSpinner,
     AZProgress,
     AZSelectGroup,
-    AZTextarea
+    AZTextarea,
+    AZCCModal
 }

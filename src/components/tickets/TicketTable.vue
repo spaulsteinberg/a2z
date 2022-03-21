@@ -12,7 +12,7 @@
                     <button class="btn btn-primary mx-1 mt-1" @click="handleOpenModal(scope.row)">
                         <ActionIcon />
                     </button>
-                    <button class="btn btn-danger mx-1 mt-1" v-if="scope.row.hasStatus === openTicketType">
+                    <button class="btn btn-danger mx-1 mt-1" @click="handleOpenConfirmModal(scope.row)" v-if="scope.row.hasStatus === openTicketType">
                         <ActionIcon variant="trash" />
                     </button>
                 </div>
@@ -27,6 +27,7 @@
         @current-change="setPage"
     ></el-pagination>
     <ViewTicketModal @closeModal="handleCloseModal" :ticket="modalData" :viewOnly="modalData.hasStatus !== openTicketType" v-if="showModal" />
+    <AZCCModal @closeModal="handleCloseConfirmModal" @handleConfirm="handleConfirmDelete" :title="modalData.title" :body="modalData.body" v-if="showConfirmModal" />
 
 </template>
 
@@ -37,14 +38,16 @@ import { ElTable, ElTableColumn, ElPagination } from 'element-plus'
 import ActionIcon from "../icons/ActionIcon.vue"
 import TicketStatus from "../../constants/TicketStatus"
 import ViewTicketModal from "../profile/tickets/ViewTicketModal.vue"
+import { AZCCModal } from "../utility"
 
 export default {
     name: 'TicketTable',
-    components: { ElTable, ElTableColumn, ElPagination, ActionIcon, ViewTicketModal },
+    components: { ElTable, ElTableColumn, ElPagination, ActionIcon, ViewTicketModal, AZCCModal },
     setup() {
         const store = useStore()
         const page = ref(1)
         const showModal = ref(false)
+        const showConfirmModal = ref(false)
         const modalData = ref(null)
         const pageSize = 10
         const openTicketType = TicketStatus.OPEN
@@ -62,6 +65,24 @@ export default {
             modalData.value = null
         }
 
+        const handleOpenConfirmModal = data => {
+            modalData.value = {
+                title: "Confirm Ticket Deletion",
+                body: `<p>Ticket ID: ${data.ticketId}</p><p>Are you sure you want to delete this ticket from ${data.start_city_state} to ${data.end_city_state}?</p>`,
+                id: data.ticketId
+            }
+            showConfirmModal.value = true
+        }
+
+        const handleCloseConfirmModal = () => {
+            showConfirmModal.value = false
+            modalData.value = null
+        }
+
+        const handleConfirmDelete = () => {
+            console.log("confirm", modalData.value.id)
+        }
+
         return {
             tickets,
             numberOfTickets,
@@ -70,7 +91,11 @@ export default {
             setPage,
             handleOpenModal,
             handleCloseModal,
+            handleOpenConfirmModal,
+            handleCloseConfirmModal,
+            showConfirmModal,
             showModal,
+            handleConfirmDelete,
             modalData
         }
     }

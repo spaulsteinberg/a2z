@@ -77,6 +77,7 @@ export default {
     margin-top: 5%;
     padding: 0 1rem;
     overflow: scroll;
+    max-width: 1000px;
 }
 
 .search-row-container {
@@ -84,10 +85,11 @@ export default {
     flex-direction: column;
     flex-wrap: wrap;
     width: 100%;
-    justify-content: flex-start;
+    align-items: center;
 }
 .search, .status-search, .origin-search {
     flex: 0 0 100%;
+    width: 100%;
     max-width: 300px;
 }
 .status-search {
@@ -102,6 +104,7 @@ export default {
 @media screen and (min-width: 768px) {
     .search-row-container {
         flex-direction: row;
+        justify-content: flex-start;
     }
     .ticket-container {
         flex: 0 0 90%;
@@ -119,8 +122,8 @@ export default {
 @media screen and (min-width: 1072px) { .origin-search { margin: 0 !important}}
 @media screen and (min-width: 1200px) {
     .ticket-container {
-        flex: 0 0 75%;
-        width: 75%;
+        flex: 0 0 82%;
+        width: 82%;
         overflow: hidden;
     }
 }
