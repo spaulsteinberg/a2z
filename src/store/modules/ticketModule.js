@@ -71,6 +71,10 @@ const ticketModule = {
             let index = state.tickets.findIndex(ticket => ticket.ticketId === payload.ticketId)
             state.tickets[index].hasStatus = payload.newStatus
         },
+        removeTicket: (state, { ticketId }) => {
+            let index = state.tickets.findIndex(ticket => ticket.ticketId === ticketId)
+            state.tickets.splice(index, 1)
+        },
         reset: state => {
             const s = initialState();
             Object.keys(s).forEach(key => {
@@ -120,6 +124,15 @@ const ticketModule = {
                 console.log(err)
                 throw new Error(err.message)
             }
+        },
+        async deleteTicket({ commit }, { user, ticketId }) {
+            try {
+                const token = await getFirebaseIdToken(user)
+                await axios.delete(`${process.env.VUE_APP_TICKET_PATH}/${ticketId}`, { headers: { token: token } })
+                commit('removeTicket', { ticketId })
+            } catch (err) {
+                throw new Error(err.message)
+            }       
         },
         async changeTicketStatus({ commit }, payload) {
             try {

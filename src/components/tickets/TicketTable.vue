@@ -39,6 +39,7 @@ import ActionIcon from "../icons/ActionIcon.vue"
 import TicketStatus from "../../constants/TicketStatus"
 import ViewTicketModal from "../profile/tickets/ViewTicketModal.vue"
 import { AZCCModal } from "../utility"
+import { getAuth } from "firebase/auth"
 
 export default {
     name: 'TicketTable',
@@ -53,6 +54,7 @@ export default {
         const openTicketType = TicketStatus.OPEN
         const tickets = computed(() => store.getters["ticket/getFilteredTickets"].slice(pageSize * page.value - pageSize, pageSize * page.value))
         const numberOfTickets = computed(() => store.getters["ticket/getFilteredTickets"].length)
+        const auth = getAuth()
 
         const setPage = p => page.value = p
         const handleOpenModal = data => {
@@ -79,8 +81,15 @@ export default {
             modalData.value = null
         }
 
-        const handleConfirmDelete = () => {
+        const handleConfirmDelete = async () => {
             console.log("confirm", modalData.value.id)
+            try {
+                await store.dispatch("ticket/deleteTicket", { user: auth.currentUser, ticketId: modalData.value.id})
+                showConfirmModal.value = false
+                modalData.value = null
+            } catch (err) {
+                console.log(err)
+            }
         }
 
         return {

@@ -113,7 +113,7 @@ export default {
           start_city_state: `${tempStartCityState[1]},${tempStartCityState[2].substring(0, 3)}`.trim(),
           end_city_state: `${tempEndCityState[1]},${tempEndCityState[2].substring(0, 3)}`.trim(),
           distance: distanceValue.value,
-          distanceFormatted: distance.value,
+          distance_formatted: distance.value,
           est_duration: duration.value,
           base_pay: basePay.value,
           rate_per_mile: ratePerMile.value,
