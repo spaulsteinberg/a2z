@@ -21,7 +21,8 @@
       const appName = ref('a2z')
       const store = useStore()
       const userLinks = ref([
-        { to: '/explore', text: 'Explore'},
+        { to: '/explore', text: 'Explore' },
+        { to: '/tickets/view', text: 'Tickets' },
       ])
       const nonUserLinks = ref([
         { to: '/login', text: 'Login' },

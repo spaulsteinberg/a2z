@@ -11,7 +11,7 @@
             @viewClick="handleOpenModal(i)">
         </TicketCard>
         <div class="text-center">
-            <button class="btn btn-primary"><router-link to="/profile/account/tickets" class="view-all">View All</router-link></button>
+            <button class="btn btn-primary"><router-link to="/tickets/view" class="view-all">View All</router-link></button>
         </div>
     </template>
     <AZFeedbackAlert text="No tickets to display!" severity="primary" centered v-else />

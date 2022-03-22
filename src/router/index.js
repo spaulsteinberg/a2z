@@ -1,14 +1,16 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import HomeView from '../views/home/HomeView.vue'
-import MainView from '../views/main/MainView.vue';
-import AccountView from '../views/profile/AccountView.vue';
-import LoginView from '../views/auth/LoginView.vue'
-import SignupView from '../views/auth/SignupView.vue'
-import UpdateEmailView from '../views/auth/UpdateEmailView.vue'
-import ResetPasswordView from '../views/auth/ResetPasswordView.vue'
-import ChangePasswordView from '../views/auth/ChangePasswordView.vue'
-import TicketView from '../views/ticket/TicketView';
-import NotFound from '../views/NotFound.vue';
+import { 
+    MainView,
+    HomeView, 
+    AccountView, 
+    LoginView, 
+    SignupView, 
+    UpdateEmailView, 
+    ResetPasswordView, 
+    ChangePasswordView, 
+    TicketView,
+    NotFound 
+} from "../views"
 import store from '../store/index'
 
 const routes = [
@@ -24,7 +26,7 @@ const routes = [
         meta: { requiresAuth: true }
     },
     {
-        path: '/profile/account/tickets',
+        path: '/tickets/view',
         name: 'Ticket',
         component: TicketView,
         meta: { requiresAuth: true }
