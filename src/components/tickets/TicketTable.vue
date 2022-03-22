@@ -10,7 +10,8 @@
                 <!-- {{ scope.row }} -->
                 <div class="table-ops-container">
                     <button class="btn btn-primary mx-1 mt-1" @click="handleOpenModal(scope.row)">
-                        <ActionIcon />
+                        <ActionIcon v-if="scope.row.hasStatus !== completedTicketType" />
+                        <ActionIcon variant="eye" v-else />
                     </button>
                     <button class="btn btn-danger mx-1 mt-1" @click="handleOpenConfirmModal(scope.row)" v-if="scope.row.hasStatus === openTicketType">
                         <ActionIcon variant="trash" />
@@ -56,6 +57,7 @@ export default {
         })
         const pageSize = 10
         const openTicketType = TicketStatus.OPEN
+        const completedTicketType = TicketStatus.COMPLETED
         const tickets = computed(() => store.getters["ticket/getFilteredTickets"].slice(pageSize * page.value - pageSize, pageSize * page.value))
         const numberOfTickets = computed(() => store.getters["ticket/getFilteredTickets"].length)
         const auth = getAuth()
@@ -106,6 +108,7 @@ export default {
             numberOfTickets,
             pageSize,
             openTicketType,
+            completedTicketType,
             setPage,
             handleOpenModal,
             handleCloseModal,
