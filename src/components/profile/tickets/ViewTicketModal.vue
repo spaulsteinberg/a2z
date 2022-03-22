@@ -132,7 +132,7 @@ export default {
                 const request = {
                     ticketId: props.ticket.ticketId,
                     basePay: parseFloat(editForm.basePay),
-                    ratePerMile: parseFloat(editForm.ratePerMile),
+                    ratePerMile: parseFloat(parseFloat(editForm.ratePerMile).toFixed(2)),
                     hasStatus: editForm.hasStatus,
                     description: editForm.description,
                     total: parseFloat(total.value)

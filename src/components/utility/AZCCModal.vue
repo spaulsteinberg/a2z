@@ -8,8 +8,14 @@
         <div v-html="body" class="body-class"></div>
         <template #footer>
             <div class="text-center">
-                <button class="btn btn-secondary mx-1" @click="handleClose">Cancel</button>
-                <button class="btn btn-danger mx-1" @click="handleConfirm">Confirm</button>
+                <template v-if="!isLoading">
+                    <button class="btn btn-secondary mx-1" @click="handleClose">Cancel</button>
+                    <button class="btn btn-danger mx-1" @click="handleConfirm">Confirm</button>
+                </template>
+                <AZLoadingSpinner v-else />
+                <div class="mt-2" v-if="error">
+                    <AZFeedbackAlert :text="error" severity="danger" centered  />
+                </div>
             </div>
         </template>
     </el-dialog>
@@ -19,14 +25,34 @@
 import { ElDialog } from 'element-plus'
 import { ref } from 'vue'
 import useWindowWidth from '../../composables/useWindowWidth'
+import { AZLoadingSpinner, AZFeedbackAlert } from '../utility'
 export default {
     name: 'AZCCModal',
     components: {
-        ElDialog
-    },
+    ElDialog,
+    AZLoadingSpinner,
+    AZFeedbackAlert
+},
     props: {
-        title: String,
-        body: String
+        title: {
+            type: String,
+            required: false,
+            default: ""
+        },
+        body: {
+            type: String,
+            required: false,
+            default: ""
+        },
+        isLoading: {
+            type: Boolean,
+            required: false,
+            default: false
+        },
+        error: {
+            type: String,
+            required: false
+        }
     },
     setup(_, context){
         const show = ref(true)

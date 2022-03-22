@@ -27,12 +27,12 @@
         @current-change="setPage"
     ></el-pagination>
     <ViewTicketModal @closeModal="handleCloseModal" :ticket="modalData" :viewOnly="modalData.hasStatus !== openTicketType" v-if="showModal" />
-    <AZCCModal @closeModal="handleCloseConfirmModal" @handleConfirm="handleConfirmDelete" :title="modalData.title" :body="modalData.body" v-if="showConfirmModal" />
+    <AZCCModal @closeModal="handleCloseConfirmModal" @handleConfirm="handleConfirmDelete" :title="modalData.title" :body="modalData.body" :isLoading="loading" :error="error" v-if="showConfirmModal" />
 
 </template>
 
 <script>
-import { computed, ref } from "vue"
+import { computed, reactive, ref, toRefs } from "vue"
 import { useStore } from "vuex"
 import { ElTable, ElTableColumn, ElPagination } from 'element-plus'
 import ActionIcon from "../icons/ActionIcon.vue"
@@ -50,6 +50,10 @@ export default {
         const showModal = ref(false)
         const showConfirmModal = ref(false)
         const modalData = ref(null)
+        const confirmModalState = reactive({
+            loading: false,
+            error: null
+        })
         const pageSize = 10
         const openTicketType = TicketStatus.OPEN
         const tickets = computed(() => store.getters["ticket/getFilteredTickets"].slice(pageSize * page.value - pageSize, pageSize * page.value))
@@ -57,6 +61,7 @@ export default {
         const auth = getAuth()
 
         const setPage = p => page.value = p
+
         const handleOpenModal = data => {
             console.log(data)
             modalData.value = data
@@ -79,17 +84,21 @@ export default {
         const handleCloseConfirmModal = () => {
             showConfirmModal.value = false
             modalData.value = null
+            confirmModalState.loading = false
+            confirmModalState.error = null
         }
 
         const handleConfirmDelete = async () => {
             console.log("confirm", modalData.value.id)
             try {
+                confirmModalState.loading = true
+                confirmModalState.error = null
                 await store.dispatch("ticket/deleteTicket", { user: auth.currentUser, ticketId: modalData.value.id})
                 showConfirmModal.value = false
                 modalData.value = null
-            } catch (err) {
-                console.log(err)
-            }
+            } 
+            catch (err) { confirmModalState.error = "Could not delete this ticket. Please try again." }
+            finally { confirmModalState.loading = false }
         }
 
         return {
@@ -105,7 +114,8 @@ export default {
             showConfirmModal,
             showModal,
             handleConfirmDelete,
-            modalData
+            modalData,
+            ...toRefs(confirmModalState)
         }
     }
 }
