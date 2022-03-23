@@ -5,7 +5,8 @@
       <SwapIcon fill="white" />
     </button>
     <AZInputGroup v-model.trim="destination" id="destination-loc" placeholder="Choose your destination" labelText="Destination: " :hasMargin="false"/>
-    <button class="btn btn-primary mt-2" @click="handleGoClick" :disabled="!validPlaces">Go!</button>
+    <button class="btn btn-primary mt-2" @click="handleGoClick" :disabled="!validPlaces" v-if="!success">Go!</button>
+    <button class="btn btn-primary mt-2" @click="handleOpenTicketModal" v-else>Create Ticket</button>
     <div class="my-3" v-if="loading">
       <AZFeedbackAlert text="Calculating Route..." centered includeSpinner/>
     </div>
@@ -13,20 +14,22 @@
       <AZFeedbackAlert :text="error" severity="danger" centered />
     </div>
   </div>
+  <CreateTicketModal :data="createTicketData" @closeModal="handleCloseTicketModal" v-if="showCreateTicketModal" />
 </template>
 
 <script>
     import { ref, onMounted, computed, reactive, toRefs } from 'vue'
     import { useStore } from 'vuex';
-    import AZInputGroup from '../utility/AZInputGroup.vue';
+    import { AZInputGroup , AZFeedbackAlert } from '../utility';
     import SwapIcon from '../icons/SwapIcon.vue';
-    import AZFeedbackAlert from '../utility/AZFeedbackAlert.vue';
+    import CreateTicketModal from "../tickets/CreateTicketModal.vue"
     export default {
         name: 'SideDrawerContainer',
         components: {
           AZInputGroup,
           SwapIcon,
-          AZFeedbackAlert
+          AZFeedbackAlert,
+          CreateTicketModal
         },
         setup(){
           const store = useStore()
@@ -34,13 +37,19 @@
           const destination = ref('')
           const autocompleteSource = ref(null)
           const autocompleteDestination = ref(null)
+          const showCreateTicketModal = ref(false)
+          const createTicketData = ref(null)
           const startLabel = "A",
                 destLabel = "Z"
           const validPlaces = computed(() => source.value && destination.value ? true : false)
+
+
           const geoState = reactive({
             loading: false,
+            success: false,
             error: ""
           })
+
           onMounted(() => {
             autocompleteSource.value = new window.google.maps.places.Autocomplete(
               document.getElementById("source-loc")
@@ -81,6 +90,15 @@
 
           const handleGoClick = () => handleGeocodingSubmit(autocompleteSource.value, autocompleteDestination.value)
 
+          const handleOpenTicketModal = () => {
+            console.log("create ticket click...")
+            showCreateTicketModal.value = true
+          }
+
+          const handleCloseTicketModal = () => {
+            showCreateTicketModal.value = false 
+          }
+          
           const calculateAndDisplayRoute = (origin, destination) => {
             store.state.googleMaps.directions.service
             .route({
@@ -91,6 +109,19 @@
             .then(result => {
               console.log(result)
               store.state.googleMaps.directions.renderer.setDirections(result)
+              geoState.success = true
+              const route = result.routes[0].legs[0]
+              const distance = parseFloat((route.distance.value / 1609.34).toFixed(2))
+              createTicketData.value = {
+                waypoints: [result.geocoded_waypoints[0].place_id, result.geocoded_waypoints[1].place_id],
+                address: {
+                  start: route.start_address,
+                  end: route.end_address
+                },
+                distance,
+                distanceText: `${distance} miles`,
+                duration: route.duration.text
+              }
             })
             .catch(err => {
               console.log("error", err)
@@ -102,6 +133,7 @@
           const handleGeocodingSubmit = (source, destination) => {
             geoState.loading = true
             geoState.error = ""
+            geoState.success = false
             const sourcePlace = source.getPlace();
             const destPlace = destination.getPlace();
 
@@ -135,7 +167,11 @@
             validPlaces,
             ...toRefs(geoState),
             handleSwapLocations,
-            handleGoClick
+            handleGoClick,
+            handleOpenTicketModal,
+            handleCloseTicketModal,
+            showCreateTicketModal,
+            createTicketData
           }
         }
     }

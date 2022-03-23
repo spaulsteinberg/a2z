@@ -32,7 +32,7 @@ export default {
     ElDialog,
     AZLoadingSpinner,
     AZFeedbackAlert
-},
+    },
     props: {
         title: {
             type: String,

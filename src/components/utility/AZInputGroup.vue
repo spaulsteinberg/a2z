@@ -1,7 +1,7 @@
 <template>
     <div :class="[hasMargin && 'my-2', 'form-group']">
       <label :for="id">{{labelText}}</label>
-      <input :type="type" :class="['form-control', isInvalid && 'is-invalid']" :id="id" :placeholder="placeholder" :value="modelValue" @blur="handleBlur" @input="$emit('update:modelValue', $event.target.value)" :disabled="disabled" :step="step"/>
+      <input :type="type" :class="['form-control', isInvalid && 'is-invalid', alignInput && alignInput]" :id="id" :placeholder="placeholder" :value="modelValue" @blur="handleBlur" @input="$emit('update:modelValue', $event.target.value)" :disabled="disabled" :step="step"/>
     </div>
 </template>
 
@@ -57,6 +57,10 @@
             step: {
                 type: String,
                 required: false
+            },
+            alignInput: {
+                type: String,
+                required: false,
             }
         }
     }
