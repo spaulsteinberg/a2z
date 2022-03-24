@@ -72,9 +72,7 @@ export default {
     flex-wrap: wrap;
     flex: 0 0 100%;
     width: 100%;
-    margin-right: auto;
-    margin-left: auto;
-    margin-top: 5%;
+    margin: 5% auto 1rem auto;
     padding: 0 1rem;
     overflow: scroll;
     max-width: 1000px;
