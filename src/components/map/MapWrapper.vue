@@ -88,7 +88,7 @@ export default {
         watch(() => _.cloneDeep(store.getters["googleMaps/getSourceMarker"]), newValues => {
           console.log("WATCH SOURCE", newValues)
           removeSource()
-          addSource(newValues)
+          if (newValues) addSource(newValues)
         }, {
           deep: true
         })
@@ -96,7 +96,7 @@ export default {
         watch(() => _.cloneDeep(store.getters["googleMaps/getDestinationMarker"]), newValues => {
           console.log("WATCH DEST", newValues)
           removeDestination()
-          addDestination(newValues)
+          if (newValues) addDestination(newValues)
         }, {
           deep: true
         })

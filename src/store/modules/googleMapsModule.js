@@ -40,6 +40,12 @@ const googleMapsModule = {
         removeMarkers(state, _) {
             state.markers.source = null
             state.markers.destination = null
+        },
+        removeRouteDisplay(state, _) {
+            state.directions.renderer.setMap(null)
+        },
+        setDirectionRenderer(state, _) {
+            state.directions.renderer = new state.google.maps.DirectionsRenderer({map: state.map, suppressMarkers: true})
         }
     }
 }

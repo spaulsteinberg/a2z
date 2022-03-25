@@ -6,7 +6,10 @@
     </button>
     <AZInputGroup v-model.trim="destination" id="destination-loc" placeholder="Choose your destination" labelText="Destination: " :hasMargin="false"/>
     <button class="btn btn-primary mt-2" @click="handleGoClick" :disabled="!validPlaces" v-if="!success">Go!</button>
-    <button class="btn btn-primary mt-2" @click="handleOpenTicketModal" v-else>Create Ticket</button>
+    <template v-else>
+      <button class="btn btn-primary mt-2" @click="handleOpenTicketModal">Create Ticket</button>
+      <button class="btn btn-outline-info mt-2" @click="handleClearMap">Clear</button>
+    </template>
     <div class="my-3" v-if="loading">
       <AZFeedbackAlert text="Calculating Route..." centered includeSpinner/>
     </div>
@@ -42,7 +45,6 @@
           const startLabel = "A",
                 destLabel = "Z"
           const validPlaces = computed(() => source.value && destination.value ? true : false)
-
 
           const geoState = reactive({
             loading: false,
@@ -97,6 +99,17 @@
 
           const handleCloseTicketModal = () => {
             showCreateTicketModal.value = false 
+          }
+
+          const handleClearMap = () => {
+            geoState.loading = false
+            geoState.error = ""
+            geoState.success = false
+            store.commit('googleMaps/removeMarkers')
+            store.commit('googleMaps/removeRouteDisplay')
+            store.commit('googleMaps/setDirectionRenderer')
+            source.value = ""
+            destination.value = ""
           }
           
           const calculateAndDisplayRoute = (origin, destination) => {
@@ -170,6 +183,7 @@
             handleGoClick,
             handleOpenTicketModal,
             handleCloseTicketModal,
+            handleClearMap,
             showCreateTicketModal,
             createTicketData
           }

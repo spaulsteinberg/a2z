@@ -130,5 +130,6 @@ export default {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
+    margin: .25rem 0
 }
 </style>
