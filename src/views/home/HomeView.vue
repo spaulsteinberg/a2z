@@ -1,167 +1,118 @@
 <template>
-  <AZCard>
-    <template v-slot:header>
-      <h2 class="text-center">Create Ticket</h2>
-    </template>
-    <template v-slot:content>
-      <div>Start: {{ start }}</div>
-      <div>End: {{ end }}</div>
-      <div>Distance: {{ distance }}</div>
-      <div>Duration: {{ duration }}</div>
-      <div>
-        <label class="mx-1">Base Pay:</label>
-        <input type="number" v-model="basePay" />
-      </div>
-      <div>
-        <label class="mx-1">Rate/Mile:</label>
-        <input type="number" v-model="ratePerMile" />
-      </div>
-      <div>Total: {{ total }}</div>
-      <div>
-        <label>Description</label>
-        <div>
-          <textarea rows="5" v-model="description">description goes here</textarea>
-        </div>
-      </div>
-      <hr />
-      <div>Place 1: {{ startPlace }}</div>
-      <div>Place 2: {{ endPlace }}</div>
-      <div>company name and contact</div>
-      <button class="btn btn-info" @click="handleGetTickets">Get Tickets</button>
-      <button class="btn btn-primary" @click="handleCreateTicket">Create Ticket</button>
-      <div class="my-4">
-        <p v-for="id of ticketIds" :key="id">{{ id }}</p>
-      </div>
-    </template>
-  </AZCard>
-<!--   <TicketCard 
-    :startPlaceFormatted="startTicketPlace" 
-    :endPlaceFormatted="endTicketPlace" 
-    :tripDuration="duration"
-    :tripValue="total"
-    v-if="finished" /> -->
+  <section id="top" class="global-home-padding" data-aos="fade-in">
+    <div class="top-header-container">
+      <h1>A Better Way to Move</h1>
+    </div>
+    <div class="top-description">
+      <p v-if="userIsLoggedIn">
+        Welcome back! Looks like your all logged in. If you need a refresher, create new tickets at the Explore page. 
+        Manage and check the progress of tickets at the Ticket table. Update your profile in the Manage Account tab. For the fastest route, tap the buttons below.
+      </p>
+      <p v-else>
+        Professional truck driver? Browse our listings for long-haul jobs. 
+        Looking to earn some spending money? We have that too. Look for listings you can do from the comfort of your car.
+      </p>
+    </div>
+    <div class="top-button-container">
+      <template v-if="userIsLoggedIn">
+        <router-link to="/explore">
+          <button class="btn btn-primary" data-aos="fade-up" data-aos-once="true" data-aos-delay="500" data-aos-duration="900">
+            Explore
+          </button>
+        </router-link>
+        <router-link to="/tickets/view" data-aos="fade-up" data-aos-once="true" data-aos-delay="700" data-aos-duration="900">
+          <button class="btn btn-info tickets-button">
+            Tickets
+          </button>
+        </router-link>
+        <router-link to="/profile/account">
+          <button class="btn btn-secondary" data-aos="fade-up" data-aos-once="true" data-aos-delay="900" data-aos-duration="900">
+            Account
+          </button>
+        </router-link>
+      </template>
+      <template v-else>
+        <router-link to="/login">
+          <button class="btn btn-primary" data-aos="fade-up" data-aos-once="true" data-aos-delay="500" data-aos-duration="900">
+            Login
+          </button>
+        </router-link>
+        <router-link to="/signup">
+          <button class="btn sign-up-button" data-aos="fade-up" data-aos-once="true" data-aos-delay="700" data-aos-duration="900">
+            Sign Up
+          </button>
+        </router-link>
+      </template>
+    </div>
+  </section>
 </template>
 
 <script>
-import axios from 'axios'
-import { getAuth } from 'firebase/auth'
-import { computed, onMounted, ref } from 'vue'
-import { useStore } from 'vuex'
-import AZCard from '../../components/utility/AZCard.vue'
-//import TicketCard from '../../components/ticket/TicketCard.vue'
+import { getAuth } from "@firebase/auth"
+import { computed } from "vue"
+
 export default {
   name: "HomeView",
   setup() {
-    const start = ref('')
-    const end = ref('')
-    const distance = ref('')
-    const distanceValue = ref(0)
-    const duration = ref('')
-    const startPlace = ref('')
-    const description = ref('')
-    const endPlace = ref('')
-    const basePay = ref(0)
-    const ratePerMile = ref(0)
-    const startTicketPlace = ref('')
-    const endTicketPlace = ref('')
-    const total = computed(() => basePay.value + distanceValue.value * ratePerMile.value)
-    const store = useStore()
     const auth = getAuth()
-    const ticketIds = computed(() => store.state.ticket.tickets.map(t => t.ticketId))
-    const finished = ref(false)
-    const show = ref(false)
-    onMounted(() => {
-      axios.get("./directions.json")
-        .then(raw => raw.data)
-        .then(res => {
-          console.log(res.geocoded_waypoints)
-          startPlace.value = res.geocoded_waypoints[0].place_id
-          endPlace.value = res.geocoded_waypoints[1].place_id
-          return res
-        })
-        .then(res => res.routes[0].legs[0])
-        .then(route => {
-          console.log(route.start_address);
-          console.log(route.end_address);
-          console.log(route.distance.text);
-          console.log(route.duration.text);
-          start.value = route.start_address
-          end.value = route.end_address
-          distanceValue.value = parseFloat((route.distance.value / 1609.34).toFixed(2))
-          distance.value = `${distanceValue.value} miles`
-          duration.value = route.duration.text
-          const temp = route.start_address.split(",")
-          const temp2 = route.end_address.split(",")
-          startTicketPlace.value = `${temp[1]},${temp[2].substring(0, 3)}`
-          endTicketPlace.value = `${temp2[1]},${temp2[2].substring(0, 3)}`
-        })
-        .catch(err => console.log(err))
-        .finally(() => finished.value = true)
-    });
-
-    const handleGetTickets = async () => {
-      await store.dispatch("ticket/getTickets", { user: auth.currentUser })
-    }
-
-    const handleCreateTicket = async () => {
-      try {
-        const tempStartCityState = start.value.split(",")
-        const tempEndCityState = end.value.split(",")
-        const request = {
-          start_address: start.value,
-          destination_address: end.value,
-          start_city_state: `${tempStartCityState[1]},${tempStartCityState[2].substring(0, 3)}`.trim(),
-          end_city_state: `${tempEndCityState[1]},${tempEndCityState[2].substring(0, 3)}`.trim(),
-          distance: distanceValue.value,
-          distance_formatted: distance.value,
-          est_duration: duration.value,
-          base_pay: basePay.value,
-          rate_per_mile: ratePerMile.value,
-          total: total.value,
-          description: description.value,
-          places: {
-            start: startPlace.value,
-            end: endPlace.value
-          },
-          hasStatus: "OPEN"
-        }
-        await store.dispatch("ticket/postTicket", { user: auth.currentUser, request: request })
-      } catch (err) {
-        console.log(err)
-      }
-    }
-
-    const setShow = () => show.value = !show.value
-
+    const userIsLoggedIn = computed(() => auth.currentUser ? true : false)
     return {
-      start, 
-      end, 
-      distance, 
-      duration, 
-      description,
-      startPlace, 
-      endPlace, 
-      total, 
-      basePay, 
-      ratePerMile, 
-      show,
-      setShow,
-      handleGetTickets, 
-      handleCreateTicket, 
-      ticketIds,
-      startTicketPlace,
-      endTicketPlace,
-      finished
+      userIsLoggedIn
     }
-  },
-  components: { AZCard, /* TicketCard */ }
+  }
 }
 </script>
 
 <style scoped>
-.card {
-  margin: 3rem auto;
-  max-width: 500px;
+
+#top {
+  display: flex;
+  flex-direction: column;
+  background-color: #eeeeee;
+  min-height: 200px;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.sign-up-button {
+  background-color: var(--pink-theme);
+  color: white;
+  margin-left: 0px;
+  margin-top: 8px;
+}
+
+.global-home-padding {
+  padding: 0 3rem
+}
+
+.top-header-container, .top-description {
+  width: 50%;
+}
+
+.top-button-container {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+}
+
+.tickets-button {
+  margin: 8px 0;
+}
+
+@media screen and (min-width: 500px) {
+  .top-button-container {
+    flex-direction: row;
+  }
+  .sign-up-button {
+    margin-left: 8px;
+    margin-top: 0;
+  }
+
+  .tickets-button {
+    margin: 0 8px;
+  }
 }
 
 </style>

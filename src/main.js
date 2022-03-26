@@ -6,6 +6,9 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import './assets/main.css'
 import 'element-plus/dist/index.css'
 
+import AOS from 'aos'
+import 'aos/dist/aos.css';
+
 import store from './store/index';
 import { auth } from './firebase/config'
 
@@ -15,4 +18,10 @@ const unsubscribe = auth.onAuthStateChanged(user => {
     store.commit('auth/setUser', user)
     console.log("auth state change in onAuthStateChange")
     unsubscribe()
+})
+
+AOS.init({
+    once: false,
+    disable: 'phone',
+    duration: 1400
 })
