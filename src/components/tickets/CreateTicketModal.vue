@@ -5,9 +5,9 @@
         :width="isLargerScreen && !isDesktop ? '60%' : isDesktop ? '30%' : '95%'"
         :before-close="handleClose"
     >
-        <p>{{ data.address.start + " to " + data.address.end}}</p>
-        <p>Distance: {{ data.distanceText }}</p>
-        <p>Duration: {{ data.duration }}</p>
+        <TicketAddressDisplay :start="data.address.start" :destination="data.address.end" />
+        <p class="text-dark">Distance: {{ data.distanceText }}</p>
+        <p class="text-dark">Duration: {{ data.duration }}</p>
         <div class="input-create-container">
             <div class="create-ticket-input">
                 <AZInputGroup type="number" v-model="basePay" id="basePay" labelText="Base Pay: " :handleBlur="v.basePay.$touch" :isInvalid="v.basePay.$error" :disabled="loading" alignInput="text-end"/>
@@ -20,7 +20,7 @@
         </div>
         <AZTextarea v-model="description" id="description" labelText="Description: " :handleBlur="v.description.$touch" :isInvalid="v.description.$error" :disabled="loading" />
         <AZErrorBlock v-for="error of v.description?.$errors" :key="error.$uid" :error="'*' + error.$message" alignText="text-left" :isSmall="true"/>
-        <p>Total: {{ total }}</p>
+        <p class="mt-2">Total: {{ total }}</p>
         <template #footer>
             <div class="text-center">
                 <template v-if="!loading">
@@ -47,10 +47,11 @@ import useWindowWidth from '../../composables/useWindowWidth'
 import { useStore } from "vuex"
 import { getAuth } from "firebase/auth"
 import TicketStatus from "../../constants/TicketStatus"
+import TicketAddressDisplay from "../profile/tickets/TicketAddressDisplay.vue"
 
 export default {
     name: 'CreateTicketModal',
-    components: { ElDialog, AZInputGroup, AZErrorBlock, AZTextarea, AZLoadingSpinner, AZFeedbackAlert },
+    components: { ElDialog, AZInputGroup, AZErrorBlock, AZTextarea, AZLoadingSpinner, AZFeedbackAlert, TicketAddressDisplay },
     props: {
         data: {
             type: Object,

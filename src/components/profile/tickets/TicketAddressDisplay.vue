@@ -29,5 +29,7 @@ export default {
     flex-wrap: wrap;
     justify-content: center;
     text-align: center;
+    color: black;
+    font-size: 18px;
 }
 </style>
