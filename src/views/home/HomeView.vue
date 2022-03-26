@@ -1,7 +1,7 @@
 <template>
   <section id="top" class="global-home-padding" data-aos="fade-in">
     <div class="top-header-container">
-      <h1>A Better Way to Move</h1>
+      <h1>A Better Way To Get From a to z.</h1>
     </div>
     <div class="top-description">
       <p v-if="userIsLoggedIn">
@@ -88,7 +88,7 @@ export default {
 }
 
 .top-header-container, .top-description {
-  width: 50%;
+  width: 100%;
 }
 
 .top-button-container {
@@ -104,6 +104,10 @@ export default {
 @media screen and (min-width: 500px) {
   .top-button-container {
     flex-direction: row;
+  }
+
+  .top-header-container, .top-description {
+    width: 50%;
   }
   .sign-up-button {
     margin-left: 8px;

@@ -1,5 +1,6 @@
 import getFirebaseIdToken from '../../firebase/getFirebaseIdToken'
 import axios from 'axios'
+import TicketStatus from "../../constants/TicketStatus"
 
 const initialState = () => {
     return {
@@ -39,7 +40,11 @@ const ticketModule = {
                 tix = tix.filter(ticket => ticket.hasStatus.toUpperCase() === state.statusValue.toUpperCase())
             }
             return tix
-        }
+        },
+        getNumberOfOpenTickets: state => state.tickets.filter(t => t.hasStatus === TicketStatus.OPEN).length,
+        getNumberOfInProgressTickets: state => state.tickets.filter(t => t.hasStatus === TicketStatus.IN_PROGRESS).length,
+        getNumberOfCompletedTickets: state => state.tickets.filter(t => t.hasStatus === TicketStatus.COMPLETED).length,
+        getNumberOfCancelledTickets: state => state.tickets.filter(t => t.hasStatus === TicketStatus.CANCELLED).length   
     },
     mutations: {
         setHasData: (state, payload) => state.hasData = payload,

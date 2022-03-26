@@ -17,6 +17,7 @@
                     </div>
                 </div>
                 <TicketTable />
+                <TicketBarChart />
             </template>
             <AZFeedbackAlert :text="loadingText" centered includeSpinner v-else />
         </template>
@@ -36,6 +37,7 @@ import { getAuth } from "firebase/auth";
 import AZFeedbackAlert from "../../components/utility/AZFeedbackAlert.vue";
 import useWindowWidth from "../../composables/useWindowWidth";
 import TicketPlaceSearch from "../../components/tickets/TicketPlaceSearch.vue";
+import TicketBarChart from "../../components/tickets/TicketBarChart.vue";
 
 export default {
     name: "TicketView",
@@ -61,7 +63,7 @@ export default {
             isSmallScreen
         }
     },
-    components: { TicketTable, TicketSearch, AZFeedbackAlert, TicketStatusDropdown, TicketPlaceSearch }
+    components: { TicketTable, TicketSearch, AZFeedbackAlert, TicketStatusDropdown, TicketPlaceSearch, TicketBarChart }
 }
 </script>
 
