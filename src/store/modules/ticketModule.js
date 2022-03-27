@@ -44,7 +44,11 @@ const ticketModule = {
         getNumberOfOpenTickets: state => state.tickets.filter(t => t.hasStatus === TicketStatus.OPEN).length,
         getNumberOfInProgressTickets: state => state.tickets.filter(t => t.hasStatus === TicketStatus.IN_PROGRESS).length,
         getNumberOfCompletedTickets: state => state.tickets.filter(t => t.hasStatus === TicketStatus.COMPLETED).length,
-        getNumberOfCancelledTickets: state => state.tickets.filter(t => t.hasStatus === TicketStatus.CANCELLED).length   
+        getNumberOfCancelledTickets: state => state.tickets.filter(t => t.hasStatus === TicketStatus.CANCELLED).length,
+        getOpenTicketCostBasis: state => state.tickets.filter(t => t.hasStatus === TicketStatus.OPEN).reduce((acc, cur) => acc + parseFloat(cur.total), 0),
+        getInProgressTicketCostBasis: state => state.tickets.filter(t => t.hasStatus === TicketStatus.IN_PROGRESS).reduce((acc, cur) => acc + parseFloat(cur.total), 0),
+        getCompletedTicketCostBasis: state => state.tickets.filter(t => t.hasStatus === TicketStatus.COMPLETED).reduce((acc, cur) => acc + parseFloat(cur.total), 0),  
+        getCancelledTicketCostBasis: state => state.tickets.filter(t => t.hasStatus === TicketStatus.CANCELLED).reduce((acc, cur) => acc + parseFloat(cur.total), 0)    
     },
     mutations: {
         setHasData: (state, payload) => state.hasData = payload,

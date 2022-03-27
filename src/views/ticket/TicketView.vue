@@ -17,12 +17,15 @@
                     </div>
                 </div>
                 <TicketTable />
-                <TicketBarChart />
             </template>
             <AZFeedbackAlert :text="loadingText" centered includeSpinner v-else />
         </template>
         <div :class="[isSmallScreen ? 'w-50' : 'w-100', 'mx-auto']" v-else>
             <AZFeedbackAlert :text="errorText" severity="danger" />
+        </div>
+        <div class="table-chart-container">
+            <TicketBarChart />
+            <TicketRevenueVisual />
         </div>
     </div>
 </template>
@@ -38,6 +41,7 @@ import AZFeedbackAlert from "../../components/utility/AZFeedbackAlert.vue";
 import useWindowWidth from "../../composables/useWindowWidth";
 import TicketPlaceSearch from "../../components/tickets/TicketPlaceSearch.vue";
 import TicketBarChart from "../../components/tickets/TicketBarChart.vue";
+import TicketRevenueVisual from "../../components/tickets/TicketRevenueVisual.vue";
 
 export default {
     name: "TicketView",
@@ -63,7 +67,7 @@ export default {
             isSmallScreen
         }
     },
-    components: { TicketTable, TicketSearch, AZFeedbackAlert, TicketStatusDropdown, TicketPlaceSearch, TicketBarChart }
+    components: { TicketTable, TicketSearch, AZFeedbackAlert, TicketStatusDropdown, TicketPlaceSearch, TicketBarChart, TicketRevenueVisual }
 }
 </script>
 
@@ -80,6 +84,11 @@ export default {
     max-width: 1000px;
 }
 
+.table-chart-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
 .search-row-container {
     display: flex;
     flex-direction: column;
@@ -117,6 +126,9 @@ export default {
     .status-search {
         margin-left: 1rem;
         margin-right: 1rem;
+    }
+    .table-chart-container {
+        flex-direction: column;
     }
 }
 @media screen and (min-width: 1072px) { .origin-search { margin: 0 !important}}

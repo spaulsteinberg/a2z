@@ -1,23 +1,23 @@
 <template>
     <div class="chart-container">
         <Bar
-    :chart-options="chartOptions"
-    :chart-data="chartData"
-    chart-id="ticket-bar-chart"
-    dataset-id-key="datasetIdKey"
-    :width="300"
-    :height="200"
-  />
+            :chart-options="chartOptions"
+            :chart-data="chartData"
+            chart-id="ticket-bar-chart"
+            dataset-id-key="datasetIdKey"
+            :width="300"
+            :height="200"
+        />
     </div>
 </template>
 
 <script>
 import { Bar } from 'vue-chartjs'
-import { Chart as ChartJS, Title, Tooltip, BarElement, CategoryScale, LinearScale } from 'chart.js'
+import { Chart as ChartJS, Tooltip, BarElement, CategoryScale, LinearScale } from 'chart.js'
 import { useStore } from 'vuex'
 import { computed } from 'vue'
 
-ChartJS.register(Title, Tooltip, BarElement, CategoryScale, LinearScale)
+ChartJS.register(Tooltip, BarElement, CategoryScale, LinearScale)
 
 export default {
     name: 'TicketBarChart',
@@ -45,8 +45,16 @@ export default {
                 backgroundColor
             }]
         }))
-        const chartOptions = {
-            responsive: true,
+        const chartOptions = { 
+            responsive: true, 
+            maintainAspectRatio: true,
+            plugins: {
+                legend: { display: false },
+                title: {
+                    display: true,
+                    text: 'Tickets per Category'
+                },
+            } 
         }
 
         return {
@@ -56,9 +64,10 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .chart-container {
-    height: 300px;
-    width: 300px
+    max-height: 300px;
+    max-width: 300px;
+    margin: 0 auto;
 }
 </style>
