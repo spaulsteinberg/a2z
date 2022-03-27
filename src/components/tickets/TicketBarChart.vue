@@ -66,8 +66,15 @@ export default {
 
 <style>
 .chart-container {
+        max-height: 250px;
+        max-width: 250px;
+        margin: 0 auto;
+    }
+
+@media screen and (min-width: 350px) {
+    .chart-container {
     max-height: 300px;
     max-width: 300px;
-    margin: 0 auto;
+}
 }
 </style>

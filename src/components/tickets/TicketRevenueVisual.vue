@@ -1,10 +1,10 @@
 <template>
-    <div class="chart-container">
+    <div id="ticket-revenue" class="chart-container">
         <Pie
             :chart-options="chartOptions"
             :chart-data="chartData"
             chart-id="ticket-pie-chart"
-            dataset-id-key="datasetIdKey"
+            data-set-id-key="datasetIdKey"
             :width="300"
             :height="200"
         />
@@ -34,14 +34,14 @@ export default {
                 },
                 tooltip: {
                     callbacks: {
-                        label: function(context) {
+                        label: function (context) {
                             return " $" + context.parsed.toFixed(2)
                         }
                     },
                     titleColor: "black"
                 }
             },
-        }        
+        }
 
         const chartData = computed(() => ({
             labels: ["Open", "In Progress", "Completed", "Cancelled"],
@@ -54,9 +54,9 @@ export default {
                         '#e3242b',
                     ],
                     data: [
-                        store.getters["ticket/getOpenTicketCostBasis"], 
-                        store.getters["ticket/getInProgressTicketCostBasis"], 
-                        store.getters["ticket/getCompletedTicketCostBasis"], 
+                        store.getters["ticket/getOpenTicketCostBasis"],
+                        store.getters["ticket/getInProgressTicketCostBasis"],
+                        store.getters["ticket/getCompletedTicketCostBasis"],
                         store.getters["ticket/getCancelledTicketCostBasis"]
                     ],
                 }
@@ -70,3 +70,15 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+#ticket-revenue {
+    margin-top: 0;
+}
+
+@media screen and (min-width: 992px) {
+    #ticket-revenue {
+        margin-top: 2rem;
+    }
+}
+</style>
