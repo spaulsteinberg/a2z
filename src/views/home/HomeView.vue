@@ -45,6 +45,11 @@
       </template>
     </div>
   </section>
+  <section>
+    <div class="for-suppliers">
+
+    </div>
+  </section>
 </template>
 
 <script>
@@ -74,6 +79,15 @@ export default {
   align-items: flex-start;
   padding-top: 1rem;
   padding-bottom: 1rem;
+}
+
+.for-suppliers {
+  background-image: url("../../assets/skyscaper-highway12.jpeg");
+  min-height: 200px;
+  width: 100%;
+  height: auto;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .sign-up-button {

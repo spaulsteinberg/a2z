@@ -25,7 +25,7 @@
                 <AZFeedbackAlert :text="errorText" severity="danger" />
             </div>
         </div>
-        <div class="table-chart-container">
+        <div class="table-chart-container" v-if="!loading && !error">
             <TicketBarChart />
             <TicketRevenueVisual />
         </div>
