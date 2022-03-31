@@ -1,5 +1,5 @@
 <template>
-  <section id="top" class="global-home-padding" data-aos="fade-in">
+  <section id="top" class="global-home-padding">
     <div class="top-header-container">
       <h1>A Better Way To Get From a to z.</h1>
     </div>
@@ -10,7 +10,7 @@
       </p>
       <p v-else>
         Professional truck driver? Browse our listings for long-haul jobs. 
-        Looking to earn some spending money? We have that too. Look for listings you can do from the comfort of your car.
+        Looking to earn some spending money? We have that too. Look for listings you can do from the comfort of your truck or car.
       </p>
     </div>
     <div class="top-button-container">
@@ -45,9 +45,19 @@
       </template>
     </div>
   </section>
-  <section>
-    <div class="for-suppliers">
-
+  <section id="supply-section">
+    <div class="for-suppliers text-white global-home-padding">
+        <div class="supplier-content">
+          <h1>a2z Supply</h1>
+          <p>See how you can post tickets for drivers to pick up and manage your tickets to get jobs done fast.</p>
+          <button class="btn btn-secondary">Learn More</button>
+        </div>
+    </div>
+    <div class="text-dark">
+      create a ticket
+    </div>
+    <div>
+      link to apps
     </div>
   </section>
 </template>
@@ -82,12 +92,16 @@ export default {
 }
 
 .for-suppliers {
-  background-image: url("../../assets/skyscaper-highway12.jpeg");
-  min-height: 200px;
+  background-image: url("../../assets/skyscaper-highway123.jpeg");
+  min-height: 300px;
   width: 100%;
   height: auto;
   background-repeat: no-repeat;
   background-size: cover;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
 }
 
 .sign-up-button {
@@ -97,8 +111,13 @@ export default {
   margin-top: 8px;
 }
 
+.supplier-content {
+  width: 100%;
+}
+
 .global-home-padding {
-  padding: 0 3rem
+  padding: 0 3rem;
+  font-size: 1.25rem;
 }
 
 .top-header-container, .top-description {
@@ -130,6 +149,10 @@ export default {
 
   .tickets-button {
     margin: 0 8px;
+  }
+
+  .supplier-content {
+    width: 50%;
   }
 }
 

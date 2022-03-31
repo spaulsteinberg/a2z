@@ -16,6 +16,21 @@
     <div class="my-3" v-if="error" >
       <AZFeedbackAlert :text="error" severity="danger" centered />
     </div>
+    <div class="ticket-container my-5"> 
+      <div v-if="ticketLoading">
+      <AZFeedbackAlert text="Fetching Tickets..." centered includeSpinner/>
+      </div>
+      <div v-else-if="ticketError" >
+        <AZFeedbackAlert :text="ticketError" severity="danger" centered />
+      </div>
+      <template v-else>
+        <button class="btn btn-info text-light" @click="showRecentTickets = !showRecentTickets" v-if="!showRecentTickets">Show Recent Tickets</button>
+        <button class="btn btn-secondary" @click="showRecentTickets = !showRecentTickets" v-else>Hide Recent Tickets</button>
+        <div class="my-5">
+          <RecentTicketCards :showViewAll="false" v-if="showRecentTickets"/>
+        </div>
+      </template>
+    </div>
   </div>
   <CreateTicketModal :data="createTicketData" @closeModal="handleCloseTicketModal" v-if="showCreateTicketModal" />
 </template>
@@ -26,16 +41,20 @@
     import { AZInputGroup , AZFeedbackAlert } from '../utility';
     import SwapIcon from '../icons/SwapIcon.vue';
     import CreateTicketModal from "../tickets/CreateTicketModal.vue"
+    import { getAuth } from '@firebase/auth';
+import RecentTicketCards from '../profile/tickets/RecentTicketCards.vue';
     export default {
         name: 'SideDrawerContainer',
         components: {
-          AZInputGroup,
-          SwapIcon,
-          AZFeedbackAlert,
-          CreateTicketModal
-        },
+    AZInputGroup,
+    SwapIcon,
+    AZFeedbackAlert,
+    CreateTicketModal,
+    RecentTicketCards
+},
         setup(){
           const store = useStore()
+          const auth = getAuth()
           const source = ref('');
           const destination = ref('')
           const autocompleteSource = ref(null)
@@ -45,6 +64,9 @@
           const startLabel = "A",
                 destLabel = "Z"
           const validPlaces = computed(() => source.value && destination.value ? true : false)
+          const ticketLoading = computed(() => store.state.ticket.isLoading)
+          const ticketError = computed(() => store.state.ticket.error)
+          const showRecentTickets = ref(false)
 
           const geoState = reactive({
             loading: false,
@@ -68,6 +90,12 @@
             autocompleteDestination.value.setComponentRestrictions({
               country: ["us"]
             })
+
+            if (!store.getters["ticket/getHasData"]) {
+              store.dispatch("ticket/getTickets", { user: auth.currentUser })
+              console.log("dispatching")
+            }
+
           })
 
           const getLngLat = location => {
@@ -185,17 +213,24 @@
             handleCloseTicketModal,
             handleClearMap,
             showCreateTicketModal,
-            createTicketData
+            createTicketData,
+            ticketLoading,
+            ticketError,
+            showRecentTickets
           }
         }
     }
 </script>
 
 <style scoped>
-  .source-dest-container {
+  .source-dest-container, .ticket-container {
     display: flex;
     flex-direction: column;
     width: 100%;
+  }
+
+  .ticket-container {
+    scroll-behavior: smooth;
   }
 
   .swap-btn {

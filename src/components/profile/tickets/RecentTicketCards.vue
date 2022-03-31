@@ -10,7 +10,7 @@
             :status="ticket.hasStatus"
             @viewClick="handleOpenModal(i)">
         </TicketCard>
-        <div class="text-center">
+        <div class="text-center" v-if="showViewAll">
             <button class="btn btn-primary"><router-link to="/tickets/view" class="view-all">View All</router-link></button>
         </div>
     </template>
@@ -29,7 +29,13 @@ import ViewTicketModal from "./ViewTicketModal.vue"
 export default {
     name: 'RecentTicketCards',
     components: { TicketCard, AZFeedbackAlert, ViewTicketModal },
-    props: {},
+    props: {
+        showViewAll: {
+            type: Boolean,
+            default: true,
+            required: false
+        }
+    },
     setup(){
         const { state } = useStore()
         const tickets = computed(() => state.ticket.tickets)
