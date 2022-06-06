@@ -72,20 +72,20 @@
                 />
             </div>
             <div class="secondary-addr">
-                <div class="zip-addr">
-                    <AZInputGroup
-                        v-model.trim.lazy="zipCode"
-                        id="zipCode"
-                        labelText="Zip Code:"
-                        :disabled="!isEditable || reqLoading"
-                        hasMargin
-                    />
-                </div>
                 <div class="unit-addr">
                     <AZInputGroup
                         v-model.trim.lazy="unit"
                         id="unit"
                         labelText="Unit #:"
+                        :disabled="!isEditable || reqLoading"
+                        hasMargin
+                    />
+                </div>
+                <div class="zip-addr">
+                    <AZInputGroup
+                        v-model.trim.lazy="zipCode"
+                        id="zipCode"
+                        labelText="Zip Code:"
                         :disabled="!isEditable || reqLoading"
                         hasMargin
                     />
