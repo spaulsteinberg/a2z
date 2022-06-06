@@ -122,6 +122,7 @@ export default {
                         start: props.data.waypoints[0],
                         end: props.data.waypoints[1]
                     },
+                    geoPoints: props.data.geoPoints,
                     hasStatus: TicketStatus.OPEN
                 }
                 console.log(request)
