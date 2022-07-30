@@ -16,7 +16,7 @@
         </AZAccordionItem>
         <AZAccordionItem title="Notifications" :parent="accordionParentId" headerId="notificationssHeader" forTarget="#notificationsInfo" forId="notificationsInfo">
             <template v-slot:body>
-                notifications here
+                <RecentNotifications />
             </template>
         </AZAccordionItem>
         <AZAccordionItem title="Credentials" :parent="accordionParentId" headerId="credentialHeader" forTarget="#credentialInfo" forId="credentialInfo">
@@ -35,6 +35,7 @@
     import BasicInfo from "./basic-info/BasicInfo.vue";
     import AZFeedbackAlert from "../utility/AZFeedbackAlert.vue";
     import RecentTicketCards from "./tickets/RecentTicketCards.vue";
+    import RecentNotifications from "./notifications/RecentNotifications.vue";
     export default {
     name: "AccountAccordion",
     props: {
@@ -61,7 +62,7 @@
             accordionParentId: "#accountAccordion",
         }
     },
-    components: { AZAccordionItem, AZAccordion, AZBlockLink, BasicInfo, AZFeedbackAlert, RecentTicketCards }
+    components: { AZAccordionItem, AZAccordion, AZBlockLink, BasicInfo, AZFeedbackAlert, RecentTicketCards, RecentNotifications }
 }
 </script>
 
