@@ -1,6 +1,6 @@
 <template>
     <div class="card mb-3">
-        <div class="card-body container">
+        <div class="card-body container" @click="handleBoxClick">
             <div class="info-container">
                 <div class="mb-1">Ticket ID: {{ notif.id }}</div>
                 <div class="mb-1">Number of Requests: {{ notif.requests.length }}</div>
@@ -8,7 +8,7 @@
                     Status: {{ status }}
                 </div>
             </div>
-            <div class="arrow-container">
+            <div class="arrow-container" v-if="width">
                 <button class="btn btn-primary" @click="handleArrowClick">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
                         class="bi bi-arrow-right" viewBox="0 0 16 16">
@@ -23,12 +23,15 @@
 
 <script>
 import { computed } from 'vue'
+import useWindowWidth from '../../../composables/useWindowWidth'
 
 export default {
     props: {
         notif: Object
     },
     setup(props, context) {
+
+        const width = useWindowWidth(475).isWidth
         const status = computed(() => {
             if (props.notif.isAccepted && props.notif.isClosed) {
                 return "Accepted and Closed"
@@ -40,11 +43,18 @@ export default {
             return "Open"
         })
 
+        const handleBoxClick = () => {
+            if (width.value) return
+            context.emit("viewArrowClick")
+        }
+
         const handleArrowClick = () => context.emit("viewArrowClick")
 
         return {
             status,
-            handleArrowClick
+            width,
+            handleArrowClick,
+            handleBoxClick
         }
     },
     emits: ["viewArrowClick"]
@@ -54,17 +64,33 @@ export default {
 <style scoped>
 .container {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
     width: 100%
 }
 
 .info-container {
-    width: 75%
+    width: 100%
 }
 
 .arrow-container {
     text-align: center;
-    width: 25%
+    width: 100%;
+    margin-top: 1rem;
+}
+
+@media screen and (min-width: 475px) {
+    .container {
+        flex-direction: row;
+    }
+
+    .info-container {
+        width: 75%
+    }
+
+    .arrow-container {
+        width: 25%;
+        margin-top: 0;
+    }
 }
 </style>
