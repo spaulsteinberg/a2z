@@ -1,5 +1,6 @@
 <template>
-    <el-table :data="data" border class="table-wrapper">
+    <div class="table-wrapper">
+        <el-table :data="data" border>
         <el-table-column prop="id" label="Ticket ID" width="200" />
         <el-table-column prop="isAccepted" label="Accepted" sortable>
             <template v-slot="scope">
@@ -22,15 +23,26 @@
             </template>
         </el-table-column>
     </el-table>
+    <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="numItems"
+        :page-size="pageSize"
+        @current-change="setPage"
+    ></el-pagination>
+    </div>
 </template>
 
 <script>
-import { ElTable, ElTableColumn } from 'element-plus'
+import { ElTable, ElTableColumn, ElPagination } from 'element-plus'
+import { computed, ref } from 'vue'
 import ActionIcon from '../icons/ActionIcon.vue'
 
 export default {
     setup() {
-        const data = [
+        const page = ref(1)
+        /* simulated network call */
+        const requestResponse = [
             {
                 id: "ticketId1",
                 isAccepted: false,
@@ -72,13 +84,27 @@ export default {
                         completedTrips: 29
                     }
                 ]
-            }
+            },
+            {
+                id: "ticketId2",
+                isAccepted: false,
+                isClosed: false,
+                requests: []
+            },
         ]
+
+        const numItems = computed(() => requestResponse.length)
+        const setPage = p => page.value = p
+        const pageSize = 10
+        const data = computed(() => requestResponse.slice(pageSize * page.value - pageSize, pageSize * page.value))
         return {
-            data
+            data,
+            numItems,
+            setPage,
+            pageSize
         }
     },
-    components: { ElTable, ElTableColumn, ActionIcon }
+    components: { ElTable, ElTableColumn, ElPagination, ActionIcon }
 }
 </script>
 
