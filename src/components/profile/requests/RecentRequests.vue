@@ -27,7 +27,7 @@ export default {
             // redirect with a context placeholder
             // if null (like on the view all click), still redirect and process that there
             console.log("Redirected with ID", id)
-            router.push({ path: '/requests', params: { id }})
+            router.push({ name: 'RequestHistory', params: { id }})
         }
 
         // placeholder data

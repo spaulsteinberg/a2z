@@ -23,6 +23,7 @@
       const userLinks = ref([
         { to: '/explore', text: 'Explore' },
         { to: '/tickets/view', text: 'Tickets' },
+        { to: '/requests', text: 'Requests' }
       ])
       const nonUserLinks = ref([
         { to: '/login', text: 'Login' },
