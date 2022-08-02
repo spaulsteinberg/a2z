@@ -8,6 +8,7 @@ import UpdateEmailView from './auth/UpdateEmailView.vue'
 import ResetPasswordView from './auth/ResetPasswordView.vue'
 import ChangePasswordView from './auth/ChangePasswordView.vue'
 import TicketView from './ticket/TicketView';
+import RequestView from './request/RequestView'
 
 export {
     NotFound,
@@ -19,5 +20,6 @@ export {
     UpdateEmailView,
     ResetPasswordView,
     ChangePasswordView, 
-    TicketView
+    TicketView,
+    RequestView
 }

@@ -14,9 +14,9 @@
                 <AZFeedbackAlert text="An error occurred loading your tickets." severity="danger" centered v-else-if="ticketError" />
             </template>
         </AZAccordionItem>
-        <AZAccordionItem title="Notifications" :parent="accordionParentId" headerId="notificationssHeader" forTarget="#notificationsInfo" forId="notificationsInfo">
+        <AZAccordionItem title="Requests" :parent="accordionParentId" headerId="notificationssHeader" forTarget="#notificationsInfo" forId="notificationsInfo">
             <template v-slot:body>
-                <RecentNotifications />
+                <RecentRequests />
             </template>
         </AZAccordionItem>
         <AZAccordionItem title="Credentials" :parent="accordionParentId" headerId="credentialHeader" forTarget="#credentialInfo" forId="credentialInfo">
@@ -35,7 +35,7 @@
     import BasicInfo from "./basic-info/BasicInfo.vue";
     import AZFeedbackAlert from "../utility/AZFeedbackAlert.vue";
     import RecentTicketCards from "./tickets/RecentTicketCards.vue";
-    import RecentNotifications from "./notifications/RecentNotifications.vue";
+    import RecentRequests from "./requests/RecentRequests.vue";
     export default {
     name: "AccountAccordion",
     props: {
@@ -62,7 +62,7 @@
             accordionParentId: "#accountAccordion",
         }
     },
-    components: { AZAccordionItem, AZAccordion, AZBlockLink, BasicInfo, AZFeedbackAlert, RecentTicketCards, RecentNotifications }
+    components: { AZAccordionItem, AZAccordion, AZBlockLink, BasicInfo, AZFeedbackAlert, RecentTicketCards, RecentRequests }
 }
 </script>
 

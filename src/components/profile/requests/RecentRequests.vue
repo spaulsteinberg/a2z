@@ -1,5 +1,5 @@
 <template>
-    <NotificationCard 
+    <RequestCard 
         v-for="notif of notificationObjs" 
         :key="notif.id" 
         :notif="notif"
@@ -17,7 +17,8 @@
 </template>
 
 <script>
-import NotificationCard from './NotificationCard.vue'
+import RequestCard from './RequestCard.vue'
+
 export default {
     setup(props, context) {
         const handleRedirectToTableWithContext = id => {
@@ -76,7 +77,7 @@ export default {
             handleRedirectToTableWithContext
         };
     },
-    components: { NotificationCard }
+    components: { RequestCard }
 }
 </script>
 

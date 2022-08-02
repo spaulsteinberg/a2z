@@ -9,6 +9,7 @@ import {
     ResetPasswordView, 
     ChangePasswordView, 
     TicketView,
+    RequestView,
     NotFound 
 } from "../views"
 import store from '../store/index'
@@ -47,6 +48,12 @@ const routes = [
         path: '/profile/account/change/password',
         name: 'ChangePassword',
         component: ChangePasswordView,
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/requests',
+        name: 'RequestHistory',
+        component: RequestView,
         meta: { requiresAuth: true }
     },
     {
