@@ -17,14 +17,17 @@
 </template>
 
 <script>
+import { useRouter } from 'vue-router'
 import RequestCard from './RequestCard.vue'
 
 export default {
     setup(props, context) {
+        const router = useRouter()
         const handleRedirectToTableWithContext = id => {
             // redirect with a context placeholder
             // if null (like on the view all click), still redirect and process that there
             console.log("Redirected with ID", id)
+            router.push({ path: '/requests', params: { id }})
         }
 
         // placeholder data
