@@ -17,7 +17,7 @@
                 <!-- {{ scope.row }} -->
                 <div class="table-reqs" :id="scope.row.id">
                     <button class="btn btn-primary table-eye-btn">
-                        <ActionIcon variant="eye" />
+                        <ActionIcon variant="eye" @click="handleViewClick(scope.row)" />
                     </button>
                 </div>
             </template>
@@ -39,7 +39,7 @@ import { computed, ref } from 'vue'
 import ActionIcon from '../icons/ActionIcon.vue'
 
 export default {
-    setup() {
+    setup(props, context) {
         const page = ref(1)
         /* simulated network call */
         const requestResponse = [
@@ -86,12 +86,14 @@ export default {
                 ]
             },
             {
-                id: "ticketId2",
+                id: "ticketId3",
                 isAccepted: false,
                 isClosed: false,
                 requests: []
             },
         ]
+
+        const handleViewClick = row => context.emit("openModal", row)
 
         const numItems = computed(() => requestResponse.length)
         const setPage = p => page.value = p
@@ -101,10 +103,12 @@ export default {
             data,
             numItems,
             setPage,
-            pageSize
+            pageSize,
+            handleViewClick
         }
     },
-    components: { ElTable, ElTableColumn, ElPagination, ActionIcon }
+    components: { ElTable, ElTableColumn, ElPagination, ActionIcon },
+    emits: ["openModal"]
 }
 </script>
 
