@@ -16,8 +16,8 @@
             <template v-slot="scope">
                 <!-- {{ scope.row }} -->
                 <div class="table-reqs" :id="scope.row.id">
-                    <button class="btn btn-primary table-eye-btn">
-                        <ActionIcon variant="eye" @click="handleViewClick(scope.row)" />
+                    <button class="btn btn-primary table-eye-btn" @click="handleViewClick(scope.row)">
+                        <ActionIcon variant="eye" />
                     </button>
                 </div>
             </template>
