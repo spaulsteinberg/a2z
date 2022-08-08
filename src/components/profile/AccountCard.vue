@@ -9,14 +9,16 @@
                 :accountLoading="accountLoading" 
                 :accountError="accountError"
                 :ticketLoading="ticketLoading"
-                :ticketError="ticketError" />
+                :ticketError="ticketError"
+                :requestLoading="requestLoading"
+                :requestError="requestError" />
         </template>
     </AZCard>
     </div>
 </template>
 
 <script>
-    import { computed, onMounted, reactive, toRefs } from "vue";
+    import { computed, onMounted } from "vue";
     import AZCard from "../utility/AZCard.vue";
     import AccountAccordion from "./AccountAccordion.vue";
     import { getAuth } from "firebase/auth";
@@ -26,26 +28,31 @@
         components: { AZCard, AccountAccordion },
         setup(){
             const auth = getAuth()
-            const store = useStore()
+            const { state, getters, dispatch } = useStore()
 
-            const accountHasData = computed(() => store.state.account.hasData)
-            const accountLoading = computed(() => store.state.account.isLoading)
-            const accountError = computed(() => store.state.account.error)
+            const accountHasData = computed(() => state.account.hasData)
+            const accountLoading = computed(() => state.account.isLoading)
+            const accountError = computed(() => state.account.error)
 
-            const ticketHasData = computed(() => store.state.ticket.hasData)
-            const ticketLoading = computed(() => store.state.ticket.isLoading)
-            const ticketError = computed(() => store.state.ticket.error)
+            const ticketHasData = computed(() => state.ticket.hasData)
+            const ticketLoading = computed(() => state.ticket.isLoading)
+            const ticketError = computed(() => state.ticket.error)
+
+            const requestHasData = getters["request/getHasRequests"]
+            const requestLoading = getters["request/getIsLoading"]
+            const requestError = computed(() => state.request.error)
 
             onMounted( async () => {
                 if (!accountHasData.value) {
-                    store.dispatch("account/getAccount", auth.currentUser)
+                    dispatch("account/getAccount", auth.currentUser)
                 }
                 if (!ticketHasData.value) {
-                    store.dispatch("ticket/getTickets", { user: auth.currentUser })
+                    dispatch("ticket/getTickets", { user: auth.currentUser })
                 }
+                !requestHasData && dispatch("request/getAllUserRequests", { user: auth.currentUser })
             })
             return {
-                accountLoading, accountError, ticketLoading, ticketError
+                accountLoading, accountError, ticketLoading, ticketError, requestLoading, requestError
             }
         }
     }

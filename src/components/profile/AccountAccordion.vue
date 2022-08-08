@@ -16,7 +16,9 @@
         </AZAccordionItem>
         <AZAccordionItem title="Requests" :parent="accordionParentId" headerId="notificationssHeader" forTarget="#notificationsInfo" forId="notificationsInfo">
             <template v-slot:body>
-                <RecentRequests />
+                <RecentRequests v-if="!requestLoading && !requestError" />
+                <AZFeedbackAlert text="Loading Requests..." severity="primary" centered includeSpinner textAlign="center" v-else-if="requestLoading"/>
+                <AZFeedbackAlert text="An error occurred loading your requests." severity="danger" centered v-else-if="requestError" />
             </template>
         </AZAccordionItem>
         <AZAccordionItem title="Credentials" :parent="accordionParentId" headerId="credentialHeader" forTarget="#credentialInfo" forId="credentialInfo">
@@ -55,6 +57,14 @@
             type: String, 
             required: true
         },
+        requestLoading: {
+            type: Boolean,
+            required: true
+        },
+        requestError: {
+            type: String,
+            required: true
+        }
     },
     setup() {
         return {
