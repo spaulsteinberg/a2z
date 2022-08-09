@@ -2,6 +2,7 @@ import axios from 'axios'
 import getFirebaseIdToken from '../../firebase/getFirebaseIdToken';
 /*
 Requests is an array of: 
+    id: "",
     createdByUser: "",
     isAccepted: false,
     isClosed: false,

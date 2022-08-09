@@ -37,6 +37,7 @@
                 await store.dispatch('auth/logout')
                 store.commit("account/reset")
                 store.commit("ticket/reset")
+                store.commit("request/reset")
                 router.push('/login')
             }
 
