@@ -12,7 +12,7 @@ const initialState = () => {
     return {
         requests: [],
         loading: false,
-        error: null
+        error: ''
     }
 }
 
@@ -37,7 +37,6 @@ const requestModule = {
     },
     actions: {
         async getAllUserRequests({ commit }, payload) {
-            console.log("get all requests")
             try {
                 commit('setLoading', true)
                 const token = await getFirebaseIdToken(payload.user).catch(err => { throw new Error("Could not get ID token") })

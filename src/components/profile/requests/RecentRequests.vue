@@ -1,11 +1,18 @@
 <template>
-    <RequestCard 
-        v-for="notif of notificationObjs" 
-        :key="notif.id" 
-        :notif="notif"
-        @viewArrowClick="handleRedirectToTableWithContext(notif.id)" 
-    />
-    <div class="text-center" v-if="notificationObjs && notificationObjs.length > 0">
+    <template v-if="requests && requests.length > 0">
+        <RequestCard 
+            v-for="request of requests.slice(0, 5)" 
+            :key="request.id" 
+            :request="request" 
+            :numRequests="request.uids.length"
+            :ticketId="request.id"
+            @viewArrowClick="handleRedirectToTableWithContext(request.id)" 
+        />
+    </template>
+    <div class="text-center mt-3" v-else>
+        <p>No data to display.</p>
+    </div>
+    <div class="text-center" v-if="requests && requests.length > 0">
         <button class="btn btn-primary" @click="handleRedirectToTableWithContext(null)">View All</button>
     </div>
     <!-- 
@@ -17,66 +24,27 @@
 </template>
 
 <script>
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 import RequestCard from './RequestCard.vue'
 
 export default {
     setup(props, context) {
         const router = useRouter()
+        const { state } = useStore()
+        // TODO -- add notification id so it can be looked up, nested for loop to show all requests for all tickets
+        const requests = computed(() => state.request.requests)
+        console.log("REQUESTS", requests.value)
         const handleRedirectToTableWithContext = id => {
             // redirect with a context placeholder
             // if null (like on the view all click), still redirect and process that there
             console.log("Redirected with ID", id)
-            router.push({ name: 'RequestHistory', params: { id }})
+            router.push({ name: 'RequestHistory', params: { id } })
         }
 
-        // placeholder data
-        const notificationObjs = [
-            {
-                id: "ticketId1",
-                isAccepted: false,
-                isClosed: false,
-                requests: [
-                    {
-                        uid: "uid1",
-                        status: "WAITING",
-                        name: "Jarvis",
-                        imageUrl: "hello",
-                        completedTrips: 4
-                    },
-                    {
-                        uid: "uid2",
-                        status: "WAITING",
-                        name: "Giles",
-                        imageUrl: "hello",
-                        completedTrips: 2
-                    }
-                ]
-            },
-            {
-                id: "ticketId2",
-                isAccepted: true,
-                isClosed: false,
-                requests: [
-                    {
-                        uid: "uid1",
-                        status: "WAITING",
-                        name: "Evil Jarvis",
-                        imageUrl: "hello",
-                        completedTrips: 8
-                    },
-                    {
-                        uid: "uid2",
-                        status: "WAITING",
-                        name: "Evil Giles",
-                        imageUrl: "hello",
-                        completedTrips: 29
-                    }
-                ]
-            }
-        ];
         return {
-            notificationObjs,
+            requests,
             handleRedirectToTableWithContext
         };
     },

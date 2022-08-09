@@ -2,8 +2,8 @@
     <div class="card mb-3">
         <div class="card-body container" @click="handleBoxClick">
             <div class="info-container">
-                <div class="mb-1">Ticket ID: {{ notif.id }}</div>
-                <div class="mb-1">Number of Requests: {{ notif.requests.length }}</div>
+                <div class="mb-1">Ticket ID: {{ ticketId }}</div>
+                <div class="mb-1">Number of Requests: {{ numRequests }}</div>
                 <div class="mb-1">
                     Status: {{ status }}
                 </div>
@@ -27,17 +27,28 @@ import useWindowWidth from '../../../composables/useWindowWidth'
 
 export default {
     props: {
-        notif: Object
+        request: {
+            type: Object,
+            required: true
+        },
+        ticketId: {
+            type: String,
+            required: true
+        },
+        numRequests: {
+            type: Number,
+            required: true
+        }
     },
     setup(props, context) {
 
         const width = useWindowWidth(475).isWidth
         const status = computed(() => {
-            if (props.notif.isAccepted && props.notif.isClosed) {
+            if (props.request.isAccepted && props.request.isClosed) {
                 return "Accepted and Closed"
-            } else if (props.notif.isAccepted) {
+            } else if (props.request.isAccepted) {
                 return "Accepted"
-            } else if (props.notif.isClosed) {
+            } else if (props.request.isClosed) {
                 return "Closed"
             }
             return "Open"
