@@ -14,6 +14,7 @@ const initialState = () => {
         streetAddress: '',
         zipCode: '',
         unit: '',
+        isDriver: true
     }
 }
 
@@ -36,7 +37,7 @@ const accountModule = {
         setStreetAddress: (state, payload) => { state.streetAddress = payload },
         setZipCode: (state, payload) => { state.zipCode = payload },
         setUnit: (state, payload) => { state.apt = payload },
-        setAllBasicFields: (state, { firstName, lastName, phoneNumber, companyName, streetAddress, zipCode, unit }) => {
+        setAllBasicFields: (state, { firstName, lastName, phoneNumber, companyName, streetAddress, zipCode, unit, isDriver }) => {
             state.firstName = firstName;
             state.lastName = lastName;
             state.phoneNumber = phoneNumber;
@@ -44,6 +45,7 @@ const accountModule = {
             state.streetAddress = streetAddress;
             state.zipCode = zipCode;
             state.unit = unit;
+            state.isDriver = Boolean(isDriver)
         },
         setHasData: (state, payload) => state.hasData = payload,
         setError: (state, payload) => state.error = payload,

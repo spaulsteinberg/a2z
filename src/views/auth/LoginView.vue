@@ -43,6 +43,13 @@
                 loading.value = true;
                 error.value = null
                 await store.dispatch('auth/login', { email: email.value, password: password.value})
+                await store.dispatch("account/getAccount", store.state.auth.user.auth.currentUser)
+                if (store.state.account.isDriver) {
+                    await store.dispatch('auth/logout')
+                    store.commit("account/reset")
+                    router.push('/login')
+                    error.value = "Drivers cannot sign in on this platform."
+                }
                 router.push('/profile/account') // change this
             } catch (err) {
                 console.log(err)
