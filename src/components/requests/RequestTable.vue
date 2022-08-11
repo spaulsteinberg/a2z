@@ -12,6 +12,11 @@
                 {{ scope.row.isClosed ? "Yes" : "No" }}
             </template>
         </el-table-column>
+        <el-table-column prop="reqs" label="Apps" sortable>
+            <template v-slot="scope">
+                {{ scope.row.uids.length }}
+            </template>
+        </el-table-column>
         <el-table-column label="Requests" fixed="right">
             <template v-slot="scope">
                 <!-- {{ scope.row }} -->
@@ -39,66 +44,21 @@ import { computed, ref } from 'vue'
 import ActionIcon from '../icons/ActionIcon.vue'
 
 export default {
+    props: {
+        requests: {
+            type: Array,
+            required: true
+        }
+    },
     setup(props, context) {
         const page = ref(1)
-        /* simulated network call */
-        const requestResponse = [
-            {
-                id: "ticketId1",
-                isAccepted: false,
-                isClosed: false,
-                requests: [
-                    {
-                        uid: "uid1",
-                        status: "WAITING",
-                        name: "Jarvis",
-                        imageUrl: "hello",
-                        completedTrips: 4
-                    },
-                    {
-                        uid: "uid2",
-                        status: "WAITING",
-                        name: "Giles",
-                        imageUrl: "hello",
-                        completedTrips: 2
-                    }
-                ]
-            },
-            {
-                id: "ticketId2",
-                isAccepted: true,
-                isClosed: false,
-                requests: [
-                    {
-                        uid: "uid1",
-                        status: "WAITING",
-                        name: "Evil Jarvis",
-                        imageUrl: "hello",
-                        completedTrips: 8
-                    },
-                    {
-                        uid: "uid2",
-                        status: "WAITING",
-                        name: "Evil Giles",
-                        imageUrl: "hello",
-                        completedTrips: 29
-                    }
-                ]
-            },
-            {
-                id: "ticketId3",
-                isAccepted: false,
-                isClosed: false,
-                requests: []
-            },
-        ]
 
         const handleViewClick = row => context.emit("openModal", row)
 
-        const numItems = computed(() => requestResponse.length)
+        const numItems = computed(() => props.requests.length)
         const setPage = p => page.value = p
         const pageSize = 10
-        const data = computed(() => requestResponse.slice(pageSize * page.value - pageSize, pageSize * page.value))
+        const data = computed(() => props.requests.slice(pageSize * page.value - pageSize, pageSize * page.value))
         return {
             data,
             numItems,

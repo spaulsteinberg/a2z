@@ -23,7 +23,8 @@ const requestModule = {
     getters: {
         getHasRequests: state => state.requests.length > 0,
         getIsLoading: state => state.loading,
-        getHasError: state => state.error ? true : false
+        getHasError: state => state.error ? true : false,
+        getRequests: state => state.requests
     },
     mutations: {
         setLoading: (state, payload) => state.loading = payload,
