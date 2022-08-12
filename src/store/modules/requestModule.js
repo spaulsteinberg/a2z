@@ -24,12 +24,16 @@ const requestModule = {
         getHasRequests: state => state.requests.length > 0,
         getIsLoading: state => state.loading,
         getHasError: state => state.error ? true : false,
-        getRequests: state => state.requests
+        getRequests: state => state.requests,
+        getClosedStatusById: (state) => (id) => state.requests.find(req => req.id === id).isClosed
     },
     mutations: {
         setLoading: (state, payload) => state.loading = payload,
         setError: (state, payload) => state.error = payload,
         setRequests: (state, payload) => state.requests = payload,
+        setRequestCloseStatus: (state, { id, isClosed }) => {
+            state.requests.find(req => req.id === id).isClosed = isClosed
+        },
         reset: state => {
             const s = initialState();
             Object.keys(s).forEach(key => {
@@ -51,6 +55,17 @@ const requestModule = {
             } catch (err) {
                 commit('setError', err.message)
             } finally { commit('setLoading', false) }
+        },
+        async postClosedStatus({ commit }, { user, id, closed }) {
+            try {
+                console.log(id, closed)
+                let closeYn = closed ? "yes" : "no"
+                const token = await getFirebaseIdToken(user).catch(err => { throw new Error("Could not get ID token") })
+                const res = await axios.post(`${process.env.VUE_APP_REQUEST_PATH}/request/close/${id}?closed=${closeYn}`, {}, { headers: { token } })
+                res && commit('setRequestCloseStatus', { id, isClosed: closed })
+            } catch (err) {
+                throw new Error(err)
+            }
         }
     }
 }
