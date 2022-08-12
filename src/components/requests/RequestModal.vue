@@ -22,15 +22,15 @@
                         <p>Email: {{data.uid[uid].email}}</p>
                         <div class="status-container">
                             <div class="status-text">Status: {{ data.uid[uid].status }}</div>
-                            <ActionIcon variant="clock" fill="blue" v-if="data.uid[uid].status === 'WAITING'"/>
-                            <ActionIcon variant="check" fill="green" v-else-if="data.uid[uid].status === 'ACCEPTED'" />
+                            <ActionIcon variant="clock" fill="blue" v-if="data.uid[uid].status === REQ_STATUS.WAITING"/>
+                            <ActionIcon variant="check" fill="green" v-else-if="data.uid[uid].status === REQ_STATUS.ACCEPTED" />
                             <ActionIcon variant="x" fill="red" v-else />
                         </div>
                     </div>
                 </div>
                 <div class="text-center mt-3">
                     <button class="btn btn-primary mx-2">Accept</button>
-                    <button class="btn btn-danger mx-2">Reject</button>
+                    <button class="btn btn-danger mx-2" @click="handleRejectRequest(uid)">Reject</button>
                 </div>
             </template>
         </AZAccordionItem>
@@ -46,6 +46,7 @@ import ActionIcon from '../icons/ActionIcon.vue'
 import { getAuth } from '@firebase/auth'
 import { useStore } from 'vuex'
 import { computed } from 'vue'
+import RequestStatus from '../../constants/RequestStatus'
 
 export default {
     name: 'RequestModal',
@@ -61,6 +62,10 @@ export default {
         const auth = getAuth()
         const { dispatch, getters } = useStore()
         const open = true
+        const REQ_STATUS = {
+            WAITING: RequestStatus.WAITING,
+            ACCEPTED: RequestStatus.ACCEPTED
+        }
         const title = `View Request ${props.data.id}`
         const requestClosed = computed(() => getters["request/getClosedStatusById"](props.data.id))
         const handleClose = () => context.emit("closeModal")
@@ -72,6 +77,13 @@ export default {
             })
             .catch(err => console.log(err))
         }
+        const handleRejectRequest = async (uid) => {
+            await dispatch("request/postRejectStatus", {
+                user: auth.currentUser,
+                id: props.data.id,
+                uid
+            })
+        }
         return {
             isMobile,
             isDesktop,
@@ -81,7 +93,9 @@ export default {
             accordionId: "accountAccordion",
             accordionParentId: "#accountAccordion",
             handleSetRequestCloseStatus,
-            requestClosed
+            requestClosed,
+            REQ_STATUS,
+            handleRejectRequest
         }
     },
     emits: ["closeModal"],
