@@ -38,6 +38,18 @@ const requestModule = {
         setRequestUidRejected: (state, { id, uid }) => {
             state.requests.find(req => req.id === id).uid[uid].status = RequestStatus.REJECTED
         },
+        setRequestUidAccepted: (state, { id, uid }) => {
+            const ticketIndex = state.requests.findIndex(req => req.id === id)
+            state.requests[ticketIndex].isAccepted = true
+            state.requests[ticketIndex].isClosed = true
+            for (const userId of state.requests[ticketIndex].uids) {
+                if (userId === uid) {
+                    state.requests[ticketIndex].uid[userId].status = RequestStatus.ACCEPTED
+                } else {
+                    state.requests[ticketIndex].uid[userId].status = RequestStatus.REJECTED
+                }
+            }
+        },
         reset: state => {
             const s = initialState();
             Object.keys(s).forEach(key => {
@@ -76,6 +88,15 @@ const requestModule = {
                 const token = await getFirebaseIdToken(user).catch(err => { throw new Error("Could not get ID token") })
                 const res = await axios.post(`${process.env.VUE_APP_REQUEST_PATH}/request/reject/${id}/${uid}`, {}, { headers: { token } })
                 res && commit('setRequestUidRejected', { id, uid })
+            } catch (err) {
+                throw new Error(err)
+            }
+        },
+        async postAcceptStatus({ commit }, { user, id, uid }) {
+            try {
+                const token = await getFirebaseIdToken(user).catch(err => { throw new Error("Could not get ID token") })
+                const res = await axios.post(`${process.env.VUE_APP_REQUEST_PATH}/request/accept/${id}/${uid}`, {}, { headers: { token } })
+                res && commit('setRequestUidAccepted', { id, uid })
             } catch (err) {
                 throw new Error(err)
             }
