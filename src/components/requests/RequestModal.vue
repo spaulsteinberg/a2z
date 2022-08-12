@@ -33,8 +33,11 @@
                     </div>
                 </div>
                 <div class="text-center mt-3" v-if="data.uid[uid].status === REQ_STATUS.WAITING">
-                    <button class="btn btn-primary mx-2">Accept</button>
-                    <button class="btn btn-danger mx-2" @click="handleRejectRequest(uid)">Reject</button>
+                    <AZLoadingSpinner spinnerColor="danger" v-if="rLoading" />
+                    <template v-else>
+                        <button class="btn btn-primary mx-2">Accept</button>
+                        <button class="btn btn-danger mx-2" @click="handleRejectRequest(uid)">Reject</button>
+                    </template>
                 </div>
             </template>
         </AZAccordionItem>
@@ -98,11 +101,15 @@ export default {
             .finally(() => closeStatus.cLoading = false)
         }
         const handleRejectRequest = async (uid) => {
+            rejectStatus.rLoading = true
+            rejectStatus.rError = false
             await dispatch("request/postRejectStatus", {
                 user: auth.currentUser,
                 id: props.data.id,
                 uid
             })
+            .catch(err => { console.log(err); rejectStatus.rError = true })
+            .finally(() => rejectStatus.rLoading = false)
         }
         return {
             isMobile,
