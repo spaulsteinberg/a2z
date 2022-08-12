@@ -10,7 +10,8 @@
         <p class="info-text my-1">
             When you are ready to accept a request, please note that all other requests will be rejected automatically.
         </p>
-        <template v-if="!cLoading">
+        <p class="text-primary" v-if="data.isAccepted">This request has been accepted.</p>
+        <template v-else-if="!cLoading">
             <button class="btn btn-info mx-auto" @click="handleSetRequestCloseStatus(false)" v-if="requestClosed">Re-Open Applications</button>
             <button class="btn btn-warning mx-auto" @click="handleSetRequestCloseStatus(true)" v-else>Close Applications</button>
         </template>
@@ -35,7 +36,7 @@
                 <div class="text-center mt-3" v-if="data.uid[uid].status === REQ_STATUS.WAITING">
                     <AZLoadingSpinner spinnerColor="danger" v-if="rLoading" />
                     <template v-else>
-                        <button class="btn btn-primary mx-2">Accept</button>
+                        <button class="btn btn-primary mx-2" @click="handleAcceptRequest(uid)">Accept</button>
                         <button class="btn btn-danger mx-2" @click="handleRejectRequest(uid)">Reject</button>
                     </template>
                 </div>
@@ -100,6 +101,7 @@ export default {
             .catch(err => { console.log(err); closeStatus.cError = true })
             .finally(() => closeStatus.cLoading = false)
         }
+
         const handleRejectRequest = async (uid) => {
             rejectStatus.rLoading = true
             rejectStatus.rError = false
@@ -111,6 +113,15 @@ export default {
             .catch(err => { console.log(err); rejectStatus.rError = true })
             .finally(() => rejectStatus.rLoading = false)
         }
+
+        const handleAcceptRequest = async (uid) => {
+            await dispatch("request/postAcceptStatus", {
+                user: auth.currentUser,
+                id: props.data.id,
+                uid
+            })
+        }
+
         return {
             isMobile,
             isDesktop,
@@ -123,6 +134,7 @@ export default {
             requestClosed,
             REQ_STATUS,
             handleRejectRequest,
+            handleAcceptRequest,
             ...toRefs(closeStatus),
             ...toRefs(rejectStatus)
         }
