@@ -10,8 +10,12 @@
         <p class="info-text my-1">
             When you are ready to accept a request, please note that all other requests will be rejected automatically.
         </p>
-        <button class="btn btn-info mx-auto" @click="handleSetRequestCloseStatus(false)" v-if="requestClosed">Re-Open Applications</button>
-        <button class="btn btn-warning mx-auto" @click="handleSetRequestCloseStatus(true)" v-else>Close Applications</button>
+        <template v-if="!cLoading">
+            <button class="btn btn-info mx-auto" @click="handleSetRequestCloseStatus(false)" v-if="requestClosed">Re-Open Applications</button>
+            <button class="btn btn-warning mx-auto" @click="handleSetRequestCloseStatus(true)" v-else>Close Applications</button>
+        </template>
+        <AZLoadingSpinner :spinnerColor="requestClosed ? 'info' : 'warning'" v-else />
+        <p class="text-danger" v-if="cError">Could not submit your request at this time.</p>
     </div>
     <AZAccordion :id="accordionId">
         <AZAccordionItem v-for="(uid, i) of data.uids" :key="uid" :title="data.uid[uid].name" :parent="accordionParentId" :headerId="i.toString()" :forTarget="`#${uid}`" :forId="uid">
@@ -28,7 +32,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="text-center mt-3">
+                <div class="text-center mt-3" v-if="data.uid[uid].status === REQ_STATUS.WAITING">
                     <button class="btn btn-primary mx-2">Accept</button>
                     <button class="btn btn-danger mx-2" @click="handleRejectRequest(uid)">Reject</button>
                 </div>
@@ -45,8 +49,9 @@ import { AZAccordion, AZAccordionItem } from '../utility/'
 import ActionIcon from '../icons/ActionIcon.vue'
 import { getAuth } from '@firebase/auth'
 import { useStore } from 'vuex'
-import { computed } from 'vue'
+import { computed, reactive, toRefs } from 'vue'
 import RequestStatus from '../../constants/RequestStatus'
+import AZLoadingSpinner from '../utility/AZLoadingSpinner.vue'
 
 export default {
     name: 'RequestModal',
@@ -67,15 +72,30 @@ export default {
             ACCEPTED: RequestStatus.ACCEPTED
         }
         const title = `View Request ${props.data.id}`
+
+        const closeStatus = reactive({
+            cLoading: false,
+            cError: false
+        })
+
+        const rejectStatus = reactive({
+            rLoading: false,
+            rError: false
+        })
+
         const requestClosed = computed(() => getters["request/getClosedStatusById"](props.data.id))
         const handleClose = () => context.emit("closeModal")
+
         const handleSetRequestCloseStatus = async (closed) => {
+            closeStatus.cLoading = true
+            closeStatus.cError = false
             await dispatch("request/postClosedStatus", { 
                 user: auth.currentUser, 
                 id: props.data.id, 
                 closed 
             })
-            .catch(err => console.log(err))
+            .catch(err => { console.log(err); closeStatus.cError = true })
+            .finally(() => closeStatus.cLoading = false)
         }
         const handleRejectRequest = async (uid) => {
             await dispatch("request/postRejectStatus", {
@@ -95,11 +115,13 @@ export default {
             handleSetRequestCloseStatus,
             requestClosed,
             REQ_STATUS,
-            handleRejectRequest
+            handleRejectRequest,
+            ...toRefs(closeStatus),
+            ...toRefs(rejectStatus)
         }
     },
     emits: ["closeModal"],
-    components: { ElDialog, AZAccordion, AZAccordionItem, ActionIcon }
+    components: { ElDialog, AZAccordion, AZAccordionItem, ActionIcon, AZLoadingSpinner }
 }
 </script>
 
