@@ -34,7 +34,7 @@
                     </div>
                 </div>
                 <div class="text-center mt-3" v-if="data.uid[uid].status === REQ_STATUS.WAITING">
-                    <AZLoadingSpinner spinnerColor="danger" v-if="rLoading" />
+                    <AZLoadingSpinner :spinnerColor="rLoading ? 'danger' : 'primary'" v-if="rLoading || aLoading" />
                     <template v-else>
                         <button class="btn btn-primary mx-2" @click="handleAcceptRequest(uid)">Accept</button>
                         <button class="btn btn-danger mx-2" @click="handleRejectRequest(uid)">Reject</button>
@@ -87,6 +87,11 @@ export default {
             rError: false
         })
 
+        const acceptStatus = reactive({
+            aLoading: false,
+            aError: false
+        })
+
         const requestClosed = computed(() => getters["request/getClosedStatusById"](props.data.id))
         const handleClose = () => context.emit("closeModal")
 
@@ -115,11 +120,15 @@ export default {
         }
 
         const handleAcceptRequest = async (uid) => {
+            acceptStatus.aLoading = true
+            acceptStatus.aError = false
             await dispatch("request/postAcceptStatus", {
                 user: auth.currentUser,
                 id: props.data.id,
                 uid
             })
+            .catch(err => { console.log(err); acceptStatus.aError = true; })
+            .finally(() => acceptStatus.aLoading = false)
         }
 
         return {
@@ -136,7 +145,8 @@ export default {
             handleRejectRequest,
             handleAcceptRequest,
             ...toRefs(closeStatus),
-            ...toRefs(rejectStatus)
+            ...toRefs(rejectStatus),
+            ...toRefs(acceptStatus)
         }
     },
     emits: ["closeModal"],
