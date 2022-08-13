@@ -26,7 +26,8 @@ const requestModule = {
         getIsLoading: state => state.loading,
         getHasError: state => state.error ? true : false,
         getRequests: state => state.requests,
-        getClosedStatusById: (state) => (id) => state.requests.find(req => req.id === id).isClosed
+        getClosedStatusById: (state) => (id) => state.requests.find(req => req.id === id).isClosed,
+        getRequestById: state => id => state.requests.find(req => req.id === id)
     },
     mutations: {
         setLoading: (state, payload) => state.loading = payload,

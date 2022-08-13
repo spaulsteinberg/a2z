@@ -18,20 +18,25 @@ import { computed, onMounted, ref } from 'vue'
 import { useStore } from 'vuex'
 import { getAuth } from '@firebase/auth'
 import { AZLoadingSpinner, AZFeedbackAlert } from '../../components/utility'
+import { useRoute } from 'vue-router'
 export default {
     setup() {
         const open = ref(false)
         const modalData = ref(null)
-        const { state, getters, dispatch } = useStore()
+        const { getters, dispatch } = useStore()
         const auth = getAuth()
+        const route = useRoute()
         const hasRequests = getters["request/getHasRequests"]
         const requestsLoading = computed(() => getters["request/getIsLoading"])
         const requestsError = computed(() => getters["request/getHasError"])
         const requests = computed(() => getters["request/getRequests"])
-        console.log(requests)
 
-        onMounted(() => {
-            !hasRequests && dispatch("request/getAllUserRequests", { user: auth.currentUser })
+        onMounted(async () => {
+            !hasRequests && await dispatch("request/getAllUserRequests", { user: auth.currentUser })
+            if (route.params.id) {
+                modalData.value = getters["request/getRequestById"](route.params.id)
+                open.value = true
+            }
         })
         const setOpen = row => {
             modalData.value = row

@@ -36,12 +36,7 @@ export default {
         // TODO -- add notification id so it can be looked up, nested for loop to show all requests for all tickets
         const requests = computed(() => state.request.requests)
         console.log("REQUESTS", requests.value)
-        const handleRedirectToTableWithContext = id => {
-            // redirect with a context placeholder
-            // if null (like on the view all click), still redirect and process that there
-            console.log("Redirected with ID", id)
-            router.push({ name: 'RequestHistory', params: { id } })
-        }
+        const handleRedirectToTableWithContext = id => router.push({ name: 'RequestHistory', params: { id } })
 
         return {
             requests,
