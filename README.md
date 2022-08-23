@@ -16,6 +16,8 @@ This project offers a middle ground between large-scale freight carriers and fri
 <a name="explore"></a>
 ## Explore
 
+![Create a Ticket](https://1drv.ms/v/s!AjWZAwNe7zfsgpRtOXiUIMGxcJgaeA?e=1NQdAQ)
+
 The Explore screen is where tickets are created. On the sidebar, users can type in the origin and destination of the trip and is poopulated by the Google Place API. The main part of the screen is occupied by a large map provided by the Google Maps API, and directions are shown on the screen via the Directions API service and renderer. After completing the ticket creation in the modal, the user can create another for the same origin and destination or just exit.
 
 <a name="tickets"></a>
